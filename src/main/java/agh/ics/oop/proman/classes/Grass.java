@@ -2,7 +2,7 @@ package agh.ics.oop.proman.classes;
 
 public class Grass extends AbstractWorldMapElement {
     public Grass(Vector2d position) {
-        this.position = position;
+        super(position);
     }
 
     @Override

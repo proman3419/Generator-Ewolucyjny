@@ -20,9 +20,9 @@ public class SimulationEngine implements IEngine {
         this.animals = new ArrayList<>();
 
         for (Vector2d position : positions) {
-            Animal animal = new Animal(this.map, position);
-            this.map.place(animal);
-            this.animals.add(animal);
+//            Animal animal = new Animal(this.map, position, 5);
+//            this.map.place(animal);
+//            this.animals.add(animal);
         }
     }
 

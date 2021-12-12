@@ -7,30 +7,48 @@ import java.util.LinkedHashMap;
 
 public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObserver {
     protected final LinkedHashMap<Vector2d, AbstractWorldMapElement> mapElements = new LinkedHashMap<>();
-    protected Vector2d lowerLeft = new Vector2d(Integer.MAX_VALUE, Integer.MAX_VALUE);
-    protected Vector2d upperRight = new Vector2d(Integer.MIN_VALUE, Integer.MIN_VALUE);
+    protected final int width;
+    protected final int height;
+    protected final int startEnergy;
+    protected final int moveEnergy;
+    protected final int plantEnergy;
+    protected final Vector2d lowerLeft;
+    protected final Vector2d upperRight;
+    protected final Vector2d lowerLeftJungle;
+    protected final Vector2d upperRightJungle;
 
-    public Vector2d getLowerLeft() {
-        return lowerLeft;
-    }
+    public AbstractWorldMap(int width, int height, int startEnergy, int moveEnergy, int plantEnergy, float jungleRatio) {
+        this.width = width;
+        this.height = height;
+        this.startEnergy = startEnergy;
+        this.moveEnergy = moveEnergy;
+        this.plantEnergy = plantEnergy;
+        this.lowerLeft = new Vector2d(0, 0);
+        this.upperRight = new Vector2d(width-1, height-1);
 
-    public Vector2d getUpperRight() {
-        return upperRight;
+        int jungleWidth = (int)(width * jungleRatio);
+        int jungleHeight = (int)(height * jungleRatio);
+        int jungleXStart = (width - jungleWidth) / 2;
+        int jungleYStart = (height - jungleHeight) / 2;
+        this.lowerLeftJungle = new Vector2d(jungleXStart, jungleYStart);
+        this.upperRightJungle = new Vector2d(jungleXStart + jungleWidth, jungleYStart + jungleHeight);
     }
 
     @Override
     public boolean canMoveTo(Vector2d position) {
-        return !(objectAt(position) instanceof Animal);
+        return true;
     }
 
     @Override
     public boolean place(Animal animal) {
-        if (canMoveTo(animal.getPosition())) {
+        Vector2d position = animal.getPosition();
+
+        if (this.lowerLeft.precedes(position) && this.upperRight.follows(position)) {
             this.mapElements.put(animal.getPosition(), animal);
             return true;
         }
 
-        throw new IllegalArgumentException(animal.getPosition() + " is occupied by another animal therefore the new animal can't be placed there");
+        return false;
     }
 
     @Override
