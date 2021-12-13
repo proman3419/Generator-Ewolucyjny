@@ -17,7 +17,8 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
     protected final Vector2d lowerLeftJungle;
     protected final Vector2d upperRightJungle;
 
-    public AbstractWorldMap(int width, int height, int startEnergy, int moveEnergy, int plantEnergy, float jungleRatio) {
+    public AbstractWorldMap(int width, int height, int startEnergy, int moveEnergy, int plantEnergy, float jungleRatio,
+                            int animalsCount, int genesCount) {
         this.width = width;
         this.height = height;
         this.startEnergy = startEnergy;
@@ -32,6 +33,15 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
         int jungleYStart = (height - jungleHeight) / 2;
         this.lowerLeftJungle = new Vector2d(jungleXStart, jungleYStart);
         this.upperRightJungle = new Vector2d(jungleXStart + jungleWidth, jungleYStart + jungleHeight);
+
+        for (int i = 0; i < animalsCount; i++) {
+            AbstractWorldMapElement animal;
+            do
+            {
+                animal = new Animal(this, genesCount);
+            } while (objectAt(animal.position) != null);
+            this.mapElements.put(animal.position, animal);
+        }
     }
 
     @Override
@@ -41,10 +51,10 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
 
     @Override
     public boolean place(Animal animal) {
-        Vector2d position = animal.getPosition();
+        Vector2d position = animal.position;
 
         if (this.lowerLeft.precedes(position) && this.upperRight.follows(position)) {
-            this.mapElements.put(animal.getPosition(), animal);
+            this.mapElements.put(animal.position, animal);
             return true;
         }
 
@@ -70,5 +80,15 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
     public void positionChanged(Vector2d oldPosition, Vector2d newPosition) {
         AbstractWorldMapElement mapElement = this.mapElements.remove(oldPosition);
         this.mapElements.put(newPosition, mapElement);
+    }
+
+    public Vector2d pickRandomPosition(boolean withinJungle) {
+        Vector2d ll = withinJungle ? this.lowerLeftJungle : this.lowerLeft;
+        Vector2d ur = withinJungle ? this.upperRightJungle : this.upperRight;
+
+        int x = Helper.getRandomIntFromRange(ll.x, ur.x);
+        int y = Helper.getRandomIntFromRange(ll.y, ur.y);
+
+        return new Vector2d(x, y);
     }
 }

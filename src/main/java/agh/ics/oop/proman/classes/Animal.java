@@ -10,18 +10,28 @@ import java.util.List;
 import static agh.ics.oop.proman.enums.MapDirection.*;
 
 public class Animal extends AbstractWorldMapElement {
-    private MapDirection orientation;
     private final AbstractWorldMap map;
-    private final List<IPositionChangeObserver> observers = new ArrayList<>();
     private final int energy;
     private final Genome genome;
+    private MapDirection orientation;
+    private final List<IPositionChangeObserver> observers = new ArrayList<>();
 
+    public Animal(AbstractWorldMap map, int genesCount) {
+        super(map.pickRandomPosition(true));
+        this.map = map;
+        this.energy = map.startEnergy;
+        this.genome = new Genome(genesCount);
+        this.orientation = getOrientation();
+        this.addObserver(map);
+    }
+
+    // Copulation constructor
     public Animal(AbstractWorldMap map, Vector2d initialPosition, int startEnergy, Genome genome) {
         super(initialPosition);
-        this.orientation = NORTH;
         this.map = map;
         this.energy = startEnergy;
         this.genome = genome;
+        this.orientation = getOrientation();
         this.addObserver(this.map);
     }
 
