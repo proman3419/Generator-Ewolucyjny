@@ -1,16 +1,22 @@
 package agh.ics.oop.proman.classes;
 
-import java.util.ArrayList;
+import agh.ics.oop.proman.core.Constants;
+import agh.ics.oop.proman.enums.GenomSide;
+
+import java.util.LinkedList;
 import java.util.List;
-import java.util.Random;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class Genome {
-    private List<Gene> genes;
+    private final List<Gene> genes;
 
     public Genome(int genesCount) {
-        this.genes = new ArrayList<>();
+        this.genes = new LinkedList<>();
         for (int i = 0; i < genesCount; i++)
-            genes.add(getRandomGene());
+            genes.add(new Gene(Helper.getRandomIntFromRange(Constants.minGeneValue, Constants.maxGeneValue+1)));
+
+        genes.sort(Helper.genesComparator); // Keep genes in the non-decreasing order
     }
 
     public Genome(List<Gene> genes) {
@@ -18,6 +24,22 @@ public class Genome {
     }
 
     public Gene getRandomGene() {
-        return this.genes.get(new Random().nextInt(this.genes.size()));
+        return this.genes.get(Helper.getRandomIntFromRange(0, this.genes.size()));
+    }
+
+    public Genome combine(Genome other, double otherGenesRatio) {
+        int thisGenesCount = (int) (Constants.genesCount * (1 - otherGenesRatio));
+        int otherGenesCount = Constants.genesCount - thisGenesCount;
+
+        if (GenomSide.getRandomGenomeSide() == GenomSide.LEFT) {
+            return new Genome(Stream.concat(this.genes.subList(0, thisGenesCount).stream(),
+                                            other.genes.subList(thisGenesCount, Constants.genesCount).stream())
+                                    .collect(Collectors.toList()));
+        }
+        else {
+            return new Genome(Stream.concat(other.genes.subList(0, otherGenesCount).stream(),
+                                            this.genes.subList(otherGenesCount, Constants.genesCount).stream())
+                                    .collect(Collectors.toList()));
+        }
     }
 }

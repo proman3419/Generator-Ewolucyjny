@@ -1,7 +1,7 @@
 package agh.ics.oop.proman.classes;
 
 public class Gene {
-    private final Integer value;
+    private final int value;
 
     public Gene(Integer value) {
         this.value = value;

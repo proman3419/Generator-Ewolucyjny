@@ -1,12 +1,18 @@
 package agh.ics.oop.proman.classes;
 
+import agh.ics.oop.proman.core.Constants;
+import agh.ics.oop.proman.enums.MoveDirection;
 import agh.ics.oop.proman.interfaces.IPositionChangeObserver;
 import agh.ics.oop.proman.interfaces.IWorldMap;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+
+import static java.lang.Math.min;
 
 public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObserver {
-    protected final LinkedHashMap<Vector2d, AbstractWorldMapElement> mapElements = new LinkedHashMap<>();
     protected final int width;
     protected final int height;
     protected final int startEnergy;
@@ -16,9 +22,17 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
     protected final Vector2d upperRight;
     protected final Vector2d lowerLeftJungle;
     protected final Vector2d upperRightJungle;
+    protected final LinkedHashMap<Vector2d, List<Animal>> animals = new LinkedHashMap<>();
+    protected final List<Animal> animalsList = new LinkedList<>();
+    protected final LinkedHashMap<Vector2d, Grass> grasses = new LinkedHashMap<>();
+    protected final List<Grass> grassesList = new LinkedList<>();
+    protected int grassesInSteppe = 0;
+    protected int grassesInJungle = 0;
+    protected final int grassesInSteppeLimit;
+    protected final int grassesInJungleLimit;
 
-    public AbstractWorldMap(int width, int height, int startEnergy, int moveEnergy, int plantEnergy, float jungleRatio,
-                            int animalsCount, int genesCount) {
+    public AbstractWorldMap(int width, int height, int startEnergy, int moveEnergy, int plantEnergy, double jungleRatio,
+                            int animalsCount) {
         this.width = width;
         this.height = height;
         this.startEnergy = startEnergy;
@@ -35,26 +49,27 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
         this.upperRightJungle = new Vector2d(jungleXStart + jungleWidth, jungleYStart + jungleHeight);
 
         for (int i = 0; i < animalsCount; i++) {
-            AbstractWorldMapElement animal;
-            do
-            {
-                animal = new Animal(this, genesCount);
-            } while (objectAt(animal.position) != null);
-            this.mapElements.put(animal.position, animal);
+            Animal animal;
+            do {
+               animal = new Animal(this);
+            } while (this.animals.get(animal.position) != null); // Choose a new position if there's an animal already
+            place(animal);
         }
+
+        this.grassesInJungleLimit = jungleWidth * jungleHeight;
+        this.grassesInSteppeLimit = width * height - this.grassesInJungleLimit;
     }
 
+    /* v IWorldMap implementation v -------------------------------------------------------------------------- */
     @Override
     public boolean canMoveTo(Vector2d position) {
-        return true;
+        return this.lowerLeft.precedes(position) && this.upperRight.follows(position);
     }
 
     @Override
     public boolean place(Animal animal) {
-        Vector2d position = animal.position;
-
-        if (this.lowerLeft.precedes(position) && this.upperRight.follows(position)) {
-            this.mapElements.put(animal.position, animal);
+        if (canMoveTo(animal.position)) {
+            addAnimal(animal, animal.position);
             return true;
         }
 
@@ -63,12 +78,18 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
 
     @Override
     public boolean isOccupied(Vector2d position) {
-        return this.mapElements.get(position) != null;
+        return this.objectAt(position) != null;
     }
 
     @Override
     public AbstractWorldMapElement objectAt(Vector2d position) {
-        return this.mapElements.get(position);
+        if (this.grasses.get(position) != null) return this.grasses.get(position);
+        if (this.animals.get(position) != null)  {
+            if (this.animals.get(position).size() > 0)
+                return this.animals.get(position).get(0);
+        }
+
+        return null;
     }
 
     @Override
@@ -77,18 +98,153 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
     }
 
     @Override
-    public void positionChanged(Vector2d oldPosition, Vector2d newPosition) {
-        AbstractWorldMapElement mapElement = this.mapElements.remove(oldPosition);
-        this.mapElements.put(newPosition, mapElement);
+    public void positionChanged(Vector2d oldPosition, Vector2d newPosition, Object objectAtOldPosition) {
+        if (objectAtOldPosition instanceof Animal animal) {
+            removeAnimal(animal, oldPosition);
+            addAnimal(animal, newPosition);
+        }
+    }
+    /* ^ IWorldMap implementation ^ -------------------------------------------------------------------------- */
+
+    /* v Simulation related v -------------------------------------------------------------------------------- */
+    public void removeDeadAnimals() {
+        for (Animal animal : this.animalsList)
+            if (animal.getEnergy() <= 0)
+                removeAnimal(animal, animal.position);
     }
 
-    public Vector2d pickRandomPosition(boolean withinJungle) {
+    public void animalsMove() {
+        for (int i = 0; i < this.animalsList.size(); i++)
+            this.animalsList.get(i).move(MoveDirection.getRandomMoveDirection());
+    }
+
+    public void animalsEat() {
+        List<Grass> grassesToRemove = new LinkedList<>();
+
+        for (Grass grass : this.grassesList) {
+            List<Animal> strongestAnimalsAtPosition = getStrongestAnimalsAtPosition(grass.position, Integer.MAX_VALUE);
+            int strongestAnimalsAtPositionCount = strongestAnimalsAtPosition.size();
+
+            for (Animal animal : strongestAnimalsAtPosition)
+                animal.eat(((double) this.plantEnergy) / ((double) strongestAnimalsAtPositionCount));
+
+            if (strongestAnimalsAtPositionCount > 0)
+                grassesToRemove.add(grass);
+        }
+
+        for (Grass grass : grassesToRemove)
+            removeGrass(grass);
+    }
+
+    public void animalsBreed() {
+        for (Vector2d position : this.animals.keySet()) {
+            if (this.animals.get(position).size() > 1) {
+                List<Animal> strongestAnimalsAtPosition = getStrongestAnimalsAtPosition(position, 2);
+                Animal strongerParent = strongestAnimalsAtPosition.get(0);
+                Animal weakerParent = strongestAnimalsAtPosition.get(1);
+                Animal child = strongerParent.breed(weakerParent);
+                place(child);
+            }
+        }
+    }
+
+    public void growGrass() {
+        int steppeSpawned = 0;
+        while (this.grassesInSteppe < this.grassesInSteppeLimit && steppeSpawned < Constants.dailyGrassSpawnCountSteppe) {
+            Vector2d position;
+            do {
+                position = chooseRandomPosition(false);
+            } while(!addGrass(new Grass(position, false)));
+            steppeSpawned++;
+        }
+
+        int jungleSpawned = 0;
+        while (this.grassesInJungle < this.grassesInJungleLimit && jungleSpawned < Constants.dailyGrassSpawnCountJungle) {
+            Vector2d position;
+            do {
+                position = chooseRandomPosition(true);
+            } while(!addGrass(new Grass(position, true)));
+            jungleSpawned++;
+        }
+    }
+    /* ^ Simulation related ^ -------------------------------------------------------------------------------- */
+
+    /* v Others v -------------------------------------------------------------------------------------------- */
+    public Vector2d chooseRandomPosition(boolean withinJungle) {
         Vector2d ll = withinJungle ? this.lowerLeftJungle : this.lowerLeft;
         Vector2d ur = withinJungle ? this.upperRightJungle : this.upperRight;
+        Vector2d position;
 
-        int x = Helper.getRandomIntFromRange(ll.x, ur.x);
-        int y = Helper.getRandomIntFromRange(ll.y, ur.y);
+        do {
+            int x = Helper.getRandomIntFromRange(ll.x, ur.x+1);
+            int y = Helper.getRandomIntFromRange(ll.y, ur.y+1);
+            position = new Vector2d(x, y);
+        } while (!withinJungle && this.lowerLeftJungle.precedes(position) && this.upperRight.follows(position));
 
-        return new Vector2d(x, y);
+        return position;
     }
+
+    protected void addAnimal(Animal animal, Vector2d position) {
+        this.animalsList.add(animal);
+
+        // If empty add a new container
+        this.animals.computeIfAbsent(position, k -> new ArrayList<>());
+        this.animals.get(position).add(animal);
+    }
+
+    protected void removeAnimal(Animal animal, Vector2d position) {
+        this.animalsList.remove(animal);
+
+        List<Animal> as = this.animals.get(position);
+        this.animals.get(position).remove(animal);
+        // If empty remove the container
+        if (this.animals.get(position).size() == 0)
+            this.animals.remove(position);
+    }
+
+    protected boolean addGrass(Grass grass) {
+        this.grassesList.add(grass);
+
+        if (this.grasses.get(grass.position) == null) {
+            this.grasses.put(grass.position, grass);
+
+            if (grass.isInJungle())
+                this.grassesInJungle++;
+            else
+                this.grassesInSteppe++;
+
+            return true;
+        }
+
+        return false;
+    }
+
+    protected void removeGrass(Grass grass) {
+        this.grassesList.remove(grass);
+
+        this.grasses.remove(grass.position);
+
+        if (grass.isInJungle())
+            this.grassesInJungle--;
+        else
+            this.grassesInSteppe--;
+    }
+
+    protected List<Animal> getStrongestAnimalsAtPosition(Vector2d position, int count) {
+        List<Animal> strongestAnimalsAtPosition = new LinkedList<>();
+        List<Animal> animalsAtPosition = this.animals.get(position);
+
+        animalsAtPosition.sort(Helper.animalEnergyComparator);
+
+        for (int i = 0; i < min(count, animalsAtPosition.size()); i++) {
+            Animal animal = animalsAtPosition.get(i);
+            if (Helper.animalEnergyComparator.compare(animal, animalsAtPosition.get(0)) == 0)
+                strongestAnimalsAtPosition.add(animal);
+            else
+                break;
+        }
+
+        return strongestAnimalsAtPosition;
+    }
+    /* ^ Others ^ -------------------------------------------------------------------------------------------- */
 }

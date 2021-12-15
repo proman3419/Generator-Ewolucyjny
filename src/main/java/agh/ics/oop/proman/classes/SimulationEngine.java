@@ -1,17 +1,21 @@
 package agh.ics.oop.proman.classes;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class SimulationEngine {
-    private final List<AbstractWorldMap> maps = new ArrayList<>();
+    private final List<AbstractWorldMap> maps;
 
-    public SimulationEngine(int mapWidth, int mapHeight, int startEnergy, int moveEnergy, int plantEnergy,
-                            float jungleRatio, int animalsCount, int genesCount) {
-        maps.add(new BoundedWorldMap(mapWidth, mapHeight, startEnergy, moveEnergy, plantEnergy, jungleRatio, animalsCount, genesCount));
-        maps.add(new UnboundedWorldMap(mapWidth, mapHeight, startEnergy, moveEnergy, plantEnergy, jungleRatio, animalsCount, genesCount));
+    public SimulationEngine(List<AbstractWorldMap> maps) {
+        this.maps = maps;
     }
 
     public void run() {
+        for (AbstractWorldMap map : maps) {
+            map.removeDeadAnimals();
+            map.animalsMove();
+            map.animalsEat();
+            map.animalsBreed();
+            map.growGrass();
+        }
     }
 }

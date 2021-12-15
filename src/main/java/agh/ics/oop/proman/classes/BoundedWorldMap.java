@@ -1,8 +1,8 @@
 package agh.ics.oop.proman.classes;
 
 public class BoundedWorldMap extends AbstractWorldMap {
-    public BoundedWorldMap(int width, int height, int startEnergy, int moveEnergy, int plantEnergy, float jungleRatio,
-                            int animalsCount, int genesCount) {
-        super(width, height, startEnergy, moveEnergy, plantEnergy, jungleRatio, animalsCount, genesCount);
+    public BoundedWorldMap(int width, int height, int startEnergy, int moveEnergy, int plantEnergy, double jungleRatio,
+                            int animalsCount) {
+        super(width, height, startEnergy, moveEnergy, plantEnergy, jungleRatio, animalsCount);
     }
 }
