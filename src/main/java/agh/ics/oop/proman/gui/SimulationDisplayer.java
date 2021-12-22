@@ -10,35 +10,36 @@ public class SimulationDisplayer extends GridPane implements IEpochEndObserver, 
     private SimulationEngine simulationEngine;
     private Thread simulationEngineThread;
     private MapDisplayer mapDisplayer;
+    private GraphsDisplayer graphsDisplayer;
 
     public SimulationDisplayer(SimulationEngine simulationEngine, AbstractWorldMap map) {
         this.simulationEngine = simulationEngine;
         this.simulationEngine.addMapChangeObserver(this);
         this.simulationEngineThread = new Thread(this.simulationEngine);
         this.mapDisplayer = new MapDisplayer(map);
+        this.graphsDisplayer = new GraphsDisplayer();
     }
 
     private void positionElements() {
         Platform.runLater(() -> {
             this.add(this.mapDisplayer, 0, 0, 1, 1);
+            this.add(this.graphsDisplayer, 1, 0, 1, 1);
         });
     }
 
     @Override
     public void run() {
         this.mapDisplayer.update();
+        this.graphsDisplayer.update(0, this.simulationEngine.getAnimalsCount(), 0);
         positionElements();
         this.simulationEngineThread.start();
     }
 
     @Override
-    public void epochEnded() {
+    public void epochEnded(int epoch, int animalsCount, int plantsCount) {
         Platform.runLater(() -> {
             this.mapDisplayer.update();
+            this.graphsDisplayer.update(epoch, animalsCount, plantsCount);
         });
-    }
-
-    public SimulationEngine getSimulationEngine() {
-        return simulationEngine;
     }
 }

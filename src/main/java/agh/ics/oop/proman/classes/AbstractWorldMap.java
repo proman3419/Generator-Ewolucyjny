@@ -253,7 +253,7 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
     }
 
     public boolean isAnyAnimalAlive() {
-        return this.animalsList.size() > 0;
+        return getAnimalsCount() > 0;
     }
 
     public Vector2d getLowerLeft() {
@@ -262,6 +262,14 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
 
     public Vector2d getUpperRight() {
         return upperRight;
+    }
+
+    public int getAnimalsCount() {
+        return this.animalsList.size();
+    }
+
+    public int getPlantsCount() {
+        return this.plantsList.size();
     }
     /* ^ Others ^ -------------------------------------------------------------------------------------------- */
 }

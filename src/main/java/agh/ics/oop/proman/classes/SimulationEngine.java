@@ -8,7 +8,8 @@ import java.util.List;
 public class SimulationEngine implements Runnable {
     private final AbstractWorldMap map;
     private final List<IEpochEndObserver> mapChangeObservers = new LinkedList<>();
-    private final int moveDelay = 300;
+    private final int moveDelay = 1400;
+    private int epoch = 0;
 
     public SimulationEngine(AbstractWorldMap map) {
         this.map = map;
@@ -16,7 +17,6 @@ public class SimulationEngine implements Runnable {
 
     @Override
     public void run() {
-        System.out.println(map.isAnyAnimalAlive());
         while (map.isAnyAnimalAlive()) {
             this.map.removeDeadAnimals();
             this.map.animalsMove();
@@ -32,15 +32,19 @@ public class SimulationEngine implements Runnable {
     }
 
     public void epochEnded() {
-        System.out.println("Epoch ended");
+        this.epoch++;
 
         for (IEpochEndObserver mapChangeObserver : this.mapChangeObservers)
-            mapChangeObserver.epochEnded();
+            mapChangeObserver.epochEnded(this.epoch, this.map.getAnimalsCount(), this.map.getPlantsCount());
 
         try {
             Thread.sleep(this.moveDelay);
         } catch (InterruptedException e) {
             System.out.println("The simulation has stopped");
         }
+    }
+
+    public int getAnimalsCount() {
+        return this.map.getAnimalsCount();
     }
 }
