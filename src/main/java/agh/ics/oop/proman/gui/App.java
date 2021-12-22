@@ -8,7 +8,6 @@ import agh.ics.oop.proman.enums.SimulationParameter;
 import agh.ics.oop.proman.interfaces.IStartButtonClickObserver;
 import javafx.application.Application;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 
@@ -21,10 +20,12 @@ public class App extends Application implements IStartButtonClickObserver {
     private SimulationDisplayer rightSimulationDisplayer;
     private Thread leftSimulationThread;
     private Thread rightSimulationThread;
+    private int width = 1920;
+    private int height = 1080;
 
     public void start(Stage primaryStage) {
         this.primaryStage = primaryStage;
-        this.primaryStage.setScene(new Scene(this.menu));
+        this.primaryStage.setScene(new Scene(this.menu, this.width, this.height));
         this.primaryStage.show();
     }
 
@@ -47,7 +48,7 @@ public class App extends Application implements IStartButtonClickObserver {
         GridPane gridPane = new GridPane();
         gridPane.add(this.leftSimulationDisplayer, 0, 0, 1, 1);
         gridPane.add(this.rightSimulationDisplayer, 1, 0, 1, 1);
-        this.primaryStage.setScene(new Scene(gridPane));
+        this.primaryStage.setScene(new Scene(gridPane, this.width, this.height));
     }
 
     private void startSimulations() {

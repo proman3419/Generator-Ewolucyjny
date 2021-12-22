@@ -8,7 +8,7 @@ import java.util.List;
 public class SimulationEngine implements Runnable {
     private final AbstractWorldMap map;
     private final List<IEpochEndObserver> mapChangeObservers = new LinkedList<>();
-    private final int moveDelay = 1400;
+    private final int moveDelay = 300;
     private int epoch = 0;
 
     public SimulationEngine(AbstractWorldMap map) {
