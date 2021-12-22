@@ -18,7 +18,7 @@ public class Helper {
     public static Comparator<Animal> animalEnergyComparator = new Comparator<Animal>() {
         @Override
         public int compare(Animal o1, Animal o2) {
-            return Double.compare(o2.getEnergy(), o1.getEnergy());
+            return Integer.compare(o2.getEnergy(), o1.getEnergy());
         }
     };
 }

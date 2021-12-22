@@ -10,8 +10,6 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 
-import static java.lang.Math.min;
-
 public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObserver {
     protected final int width;
     protected final int height;
@@ -24,12 +22,12 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
     protected final Vector2d upperRightJungle;
     protected final LinkedHashMap<Vector2d, List<Animal>> animals = new LinkedHashMap<>();
     protected final List<Animal> animalsList = new LinkedList<>();
-    protected final LinkedHashMap<Vector2d, Grass> grasses = new LinkedHashMap<>();
-    protected final List<Grass> grassesList = new LinkedList<>();
-    protected int grassesInSteppe = 0;
-    protected int grassesInJungle = 0;
-    protected final int grassesInSteppeLimit;
-    protected final int grassesInJungleLimit;
+    protected final LinkedHashMap<Vector2d, Plant> plants = new LinkedHashMap<>();
+    protected final List<Plant> plantsList = new LinkedList<>();
+    protected int plantsInSteppe = 0;
+    protected int plantsInJungle = 0;
+    protected final int plantsInSteppeLimit;
+    protected final int plantsInJungleLimit;
 
     public AbstractWorldMap(int width, int height, int startEnergy, int moveEnergy, int plantEnergy, double jungleRatio,
                             int animalsCount) {
@@ -51,13 +49,13 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
         for (int i = 0; i < animalsCount; i++) {
             Animal animal;
             do {
-               animal = new Animal(this);
+               animal = new Animal(this, true);
             } while (this.animals.get(animal.position) != null); // Choose a new position if there's an animal already
             place(animal);
         }
 
-        this.grassesInJungleLimit = jungleWidth * jungleHeight;
-        this.grassesInSteppeLimit = width * height - this.grassesInJungleLimit;
+        this.plantsInJungleLimit = jungleWidth * jungleHeight;
+        this.plantsInSteppeLimit = width * height - this.plantsInJungleLimit;
     }
 
     /* v IWorldMap implementation v -------------------------------------------------------------------------- */
@@ -83,7 +81,7 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
 
     @Override
     public AbstractWorldMapElement objectAt(Vector2d position) {
-        if (this.grasses.get(position) != null) return this.grasses.get(position);
+        if (this.plants.get(position) != null) return this.plants.get(position);
         if (this.animals.get(position) != null)  {
             if (this.animals.get(position).size() > 0)
                 return this.animals.get(position).get(0);
@@ -108,62 +106,69 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
 
     /* v Simulation related v -------------------------------------------------------------------------------- */
     public void removeDeadAnimals() {
-        for (Animal animal : this.animalsList)
-            if (animal.getEnergy() <= 0)
+        for (int i = 0; i < this.animalsList.size(); i++) {
+            Animal animal = this.animalsList.get(i);
+            if (animal.getEnergy() <= 0) {
                 removeAnimal(animal, animal.position);
+            }
+        }
     }
 
     public void animalsMove() {
-        for (int i = 0; i < this.animalsList.size(); i++)
-            this.animalsList.get(i).move(MoveDirection.getRandomMoveDirection());
+        for (int i = 0; i < this.animalsList.size(); i++) {
+            this.animalsList.get(i).move(MoveDirection.getRandomMoveDirection(), this.moveEnergy);
+        }
     }
 
     public void animalsEat() {
-        List<Grass> grassesToRemove = new LinkedList<>();
+        List<Plant> plantsToRemove = new LinkedList<>();
 
-        for (Grass grass : this.grassesList) {
-            List<Animal> strongestAnimalsAtPosition = getStrongestAnimalsAtPosition(grass.position, Integer.MAX_VALUE);
+        for (Plant plant : this.plantsList) {
+            List<Animal> strongestAnimalsAtPosition = getStrongestAnimalsAtPositionEqualEnergy(plant.position);
             int strongestAnimalsAtPositionCount = strongestAnimalsAtPosition.size();
 
             for (Animal animal : strongestAnimalsAtPosition)
-                animal.eat(((double) this.plantEnergy) / ((double) strongestAnimalsAtPositionCount));
+                animal.eat(this.plantEnergy / strongestAnimalsAtPositionCount);
 
             if (strongestAnimalsAtPositionCount > 0)
-                grassesToRemove.add(grass);
+                plantsToRemove.add(plant);
         }
 
-        for (Grass grass : grassesToRemove)
-            removeGrass(grass);
+        for (Plant plant : plantsToRemove)
+            removePlant(plant);
     }
 
     public void animalsBreed() {
         for (Vector2d position : this.animals.keySet()) {
             if (this.animals.get(position).size() > 1) {
-                List<Animal> strongestAnimalsAtPosition = getStrongestAnimalsAtPosition(position, 2);
-                Animal strongerParent = strongestAnimalsAtPosition.get(0);
-                Animal weakerParent = strongestAnimalsAtPosition.get(1);
-                Animal child = strongerParent.breed(weakerParent);
-                place(child);
+                this.animals.get(position).sort(Helper.animalEnergyComparator);
+                Animal strongerParent = this.animals.get(position).get(0);
+                Animal weakerParent = this.animals.get(position).get(1);
+
+                if (weakerParent.getEnergy() >= Constants.minEnergyToBreed) {
+                    Animal child = strongerParent.breed(weakerParent);
+                    place(child);
+                }
             }
         }
     }
 
-    public void growGrass() {
+    public void growPlants() {
         int steppeSpawned = 0;
-        while (this.grassesInSteppe < this.grassesInSteppeLimit && steppeSpawned < Constants.dailyGrassSpawnCountSteppe) {
+        while (this.plantsInSteppe < this.plantsInSteppeLimit && steppeSpawned < Constants.dailyPlantsSpawnCountSteppe) {
             Vector2d position;
             do {
                 position = chooseRandomPosition(false);
-            } while(!addGrass(new Grass(position, false)));
+            } while(!addPlant(new Plant(position, false)));
             steppeSpawned++;
         }
 
         int jungleSpawned = 0;
-        while (this.grassesInJungle < this.grassesInJungleLimit && jungleSpawned < Constants.dailyGrassSpawnCountJungle) {
+        while (this.plantsInJungle < this.plantsInJungleLimit && jungleSpawned < Constants.dailyPlantsSpawnCountJungle) {
             Vector2d position;
             do {
                 position = chooseRandomPosition(true);
-            } while(!addGrass(new Grass(position, true)));
+            } while(!addPlant(new Plant(position, true)));
             jungleSpawned++;
         }
     }
@@ -195,23 +200,22 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
     protected void removeAnimal(Animal animal, Vector2d position) {
         this.animalsList.remove(animal);
 
-        List<Animal> as = this.animals.get(position);
         this.animals.get(position).remove(animal);
         // If empty remove the container
         if (this.animals.get(position).size() == 0)
             this.animals.remove(position);
     }
 
-    protected boolean addGrass(Grass grass) {
-        this.grassesList.add(grass);
+    protected boolean addPlant(Plant plant) {
+        this.plantsList.add(plant);
 
-        if (this.grasses.get(grass.position) == null) {
-            this.grasses.put(grass.position, grass);
+        if (this.plants.get(plant.position) == null) {
+            this.plants.put(plant.position, plant);
 
-            if (grass.isInJungle())
-                this.grassesInJungle++;
+            if (plant.isInJungle())
+                this.plantsInJungle++;
             else
-                this.grassesInSteppe++;
+                this.plantsInSteppe++;
 
             return true;
         }
@@ -219,32 +223,45 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
         return false;
     }
 
-    protected void removeGrass(Grass grass) {
-        this.grassesList.remove(grass);
+    protected void removePlant(Plant plant) {
+        this.plantsList.remove(plant);
 
-        this.grasses.remove(grass.position);
+        this.plants.remove(plant.position);
 
-        if (grass.isInJungle())
-            this.grassesInJungle--;
+        if (plant.isInJungle())
+            this.plantsInJungle--;
         else
-            this.grassesInSteppe--;
+            this.plantsInSteppe--;
     }
 
-    protected List<Animal> getStrongestAnimalsAtPosition(Vector2d position, int count) {
+    protected List<Animal> getStrongestAnimalsAtPositionEqualEnergy(Vector2d position) {
         List<Animal> strongestAnimalsAtPosition = new LinkedList<>();
         List<Animal> animalsAtPosition = this.animals.get(position);
 
-        animalsAtPosition.sort(Helper.animalEnergyComparator);
+        if (animalsAtPosition != null) {
+            animalsAtPosition.sort(Helper.animalEnergyComparator);
 
-        for (int i = 0; i < min(count, animalsAtPosition.size()); i++) {
-            Animal animal = animalsAtPosition.get(i);
-            if (Helper.animalEnergyComparator.compare(animal, animalsAtPosition.get(0)) == 0)
-                strongestAnimalsAtPosition.add(animal);
-            else
-                break;
+            for (Animal animal : animalsAtPosition) {
+                if (Helper.animalEnergyComparator.compare(animal, animalsAtPosition.get(0)) == 0)
+                    strongestAnimalsAtPosition.add(animal);
+                else
+                    break;
+            }
         }
 
         return strongestAnimalsAtPosition;
+    }
+
+    public boolean isAnyAnimalAlive() {
+        return this.animalsList.size() > 0;
+    }
+
+    public Vector2d getLowerLeft() {
+        return lowerLeft;
+    }
+
+    public Vector2d getUpperRight() {
+        return upperRight;
     }
     /* ^ Others ^ -------------------------------------------------------------------------------------------- */
 }

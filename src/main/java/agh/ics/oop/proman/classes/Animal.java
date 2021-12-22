@@ -10,13 +10,13 @@ import java.util.List;
 
 public class Animal extends AbstractWorldMapElement {
     private final AbstractWorldMap map;
-    private double energy;
+    private int energy;
     private final Genome genome;
     private MapDirection orientation;
     private final List<IPositionChangeObserver> observers = new ArrayList<>();
 
-    public Animal(AbstractWorldMap map) {
-        super(map.chooseRandomPosition(true));
+    public Animal(AbstractWorldMap map, boolean withinJungle) {
+        super(map.chooseRandomPosition(withinJungle));
         this.map = map;
         this.energy = map.startEnergy;
         this.genome = new Genome(Constants.genesCount);
@@ -25,7 +25,7 @@ public class Animal extends AbstractWorldMapElement {
     }
 
     // Breeding constructor
-    public Animal(AbstractWorldMap map, Vector2d initialPosition, double startEnergy, Genome genome) {
+    public Animal(AbstractWorldMap map, Vector2d initialPosition, int startEnergy, Genome genome) {
         super(initialPosition);
         this.map = map;
         this.energy = startEnergy;
@@ -52,7 +52,7 @@ public class Animal extends AbstractWorldMapElement {
         };
     }
 
-    public void move(MoveDirection direction) {
+    public void move(MoveDirection direction, int moveEnergy) {
         switch (direction) {
             case RIGHT -> this.orientation = this.orientation.next();
             case LEFT -> this.orientation = this.orientation.previous();
@@ -71,6 +71,7 @@ public class Animal extends AbstractWorldMapElement {
                 }
             }
         }
+        this.energy -= moveEnergy;
     }
 
     private void addObserver(IPositionChangeObserver observer) {
@@ -92,21 +93,31 @@ public class Animal extends AbstractWorldMapElement {
 
     // Assumes that other.energy <= this.energy
     public Animal breed(Animal other) {
-        double childEnergy = Constants.energyPassOnBreedRatio * (this.energy + other.energy);
+        int childEnergy = (int) (Constants.energyPassOnBreedRatio * (this.energy + other.energy));
         this.energy -= Constants.energyPassOnBreedRatio * this.energy;
         other.energy -= Constants.energyPassOnBreedRatio * other.energy;
 
-        double otherGenesRatio = other.energy / (other.energy + this.energy);
+        double otherGenesRatio = (double) other.energy / ((double) (other.energy + this.energy));
         Genome childGenome = this.genome.combine(other.genome, otherGenesRatio);
 
         return new Animal(this.map, this.position, childEnergy, childGenome);
     }
 
-    public void eat(double energyGain) {
+    public void eat(int energyGain) {
         this.energy += energyGain;
     }
 
-    public double getEnergy() {
+    public int getEnergy() {
         return this.energy;
+    }
+
+    @Override
+    public String getRepresentationImagePath() {
+        return "src/main/resources/down.png";
+    }
+
+    @Override
+    public String toLabelString() {
+        return this + Integer.toString(this.energy);
     }
 }
