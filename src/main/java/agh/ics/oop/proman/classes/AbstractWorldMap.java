@@ -113,16 +113,14 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
     public void removeDeadAnimals() {
         for (int i = 0; i < this.animalsList.size(); i++) {
             Animal animal = this.animalsList.get(i);
-            if (animal.getEnergy() < this.moveEnergy) {
+            if (animal.getEnergy() < this.moveEnergy)
                 removeAnimal(animal, animal.position);
-            }
         }
     }
 
     public void animalsMove() {
-        for (int i = 0; i < this.animalsList.size(); i++) {
+        for (int i = 0; i < this.animalsList.size(); i++)
             this.animalsList.get(i).move(MoveDirection.getRandomMoveDirection(), this.moveEnergy);
-        }
     }
 
     public void animalsEat() {
@@ -203,9 +201,8 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
     }
 
     protected boolean addPlant(Plant plant) {
-        this.plantsList.add(plant);
-
         if (!isOccupied(plant.position)) {
+            this.plantsList.add(plant);
             this.plants.put(plant.position, plant);
             notePositionIfOccupied(plant.position);
 
