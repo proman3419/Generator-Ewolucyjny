@@ -15,8 +15,8 @@ public class Animal extends AbstractWorldMapElement {
     private MapDirection orientation;
     private final List<IPositionChangeObserver> observers = new ArrayList<>();
 
-    public Animal(AbstractWorldMap map, boolean withinJungle) {
-        super(map.chooseRandomPosition(withinJungle));
+    public Animal(AbstractWorldMap map, Vector2d initialPosition) {
+        super(initialPosition);
         this.map = map;
         this.energy = map.startEnergy;
         this.genome = new Genome(Constants.genesCount);

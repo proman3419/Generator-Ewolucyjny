@@ -26,7 +26,10 @@ public class GraphsDisplayer extends GridPane {
         NumberAxis yAxis = new NumberAxis();
         yAxis.setLabel(yAxisName);
 
-        return new ScatterChart<>(xAxis, yAxis);
+        ScatterChart<Number, Number> graph = new ScatterChart<>(xAxis, yAxis);
+        graph.setLegendVisible(false);
+
+        return graph;
     }
 
     private void positionElements() {

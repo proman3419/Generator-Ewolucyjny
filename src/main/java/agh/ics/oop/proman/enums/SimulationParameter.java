@@ -24,13 +24,13 @@ public enum SimulationParameter {
 
     public String getDefaultValue() {
         return switch (this) {
-            case MAP_WIDTH -> "10";
-            case MAP_HEIGHT -> "10";
-            case START_ENERGY -> "10";
+            case MAP_WIDTH -> "12";
+            case MAP_HEIGHT -> "12";
+            case START_ENERGY -> "25";
             case MOVE_ENERGY -> "1";
             case PLANT_ENERGY -> "2";
             case JUNGLE_RATIO -> "0.25";
-            case ANIMALS_COUNT -> "5";
+            case ANIMALS_COUNT -> "4";
         };
     }
 }

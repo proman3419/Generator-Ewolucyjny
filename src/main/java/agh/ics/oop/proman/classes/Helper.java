@@ -1,6 +1,8 @@
 package agh.ics.oop.proman.classes;
 
 import java.util.Comparator;
+import java.util.Random;
+import java.util.Set;
 
 public class Helper {
     // Inclusive min, exclusive max
@@ -21,4 +23,20 @@ public class Helper {
             return Integer.compare(o2.getEnergy(), o1.getEnergy());
         }
     };
+
+    public static Object getRandomElementFromSet(Set set) {
+        int size = set.size();
+        if (size > 0) {
+            int itemId = new Random().nextInt(size);
+            int i = 0;
+
+            for (Object o : set) {
+                if (i == itemId)
+                    return o;
+                i++;
+            }
+        }
+
+        return null;
+    }
 }

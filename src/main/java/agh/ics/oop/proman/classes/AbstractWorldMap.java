@@ -5,10 +5,7 @@ import agh.ics.oop.proman.enums.MoveDirection;
 import agh.ics.oop.proman.interfaces.IPositionChangeObserver;
 import agh.ics.oop.proman.interfaces.IWorldMap;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObserver {
     protected final int width;
@@ -18,16 +15,14 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
     protected final int plantEnergy;
     protected final Vector2d lowerLeft;
     protected final Vector2d upperRight;
-    protected final Vector2d lowerLeftJungle;
-    protected final Vector2d upperRightJungle;
+    protected Vector2d lowerLeftJungle;
+    protected Vector2d upperRightJungle;
     protected final LinkedHashMap<Vector2d, List<Animal>> animals = new LinkedHashMap<>();
     protected final List<Animal> animalsList = new LinkedList<>();
     protected final LinkedHashMap<Vector2d, Plant> plants = new LinkedHashMap<>();
     protected final List<Plant> plantsList = new LinkedList<>();
-    protected int plantsInSteppe = 0;
-    protected int plantsInJungle = 0;
-    protected final int plantsInSteppeLimit;
-    protected final int plantsInJungleLimit;
+    protected final Set<Vector2d> freePositionsSteppe = new HashSet<>();
+    protected final Set<Vector2d> freePositionsJungle = new HashSet<>();
 
     public AbstractWorldMap(int width, int height, int startEnergy, int moveEnergy, int plantEnergy, double jungleRatio,
                             int animalsCount) {
@@ -39,23 +34,33 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
         this.lowerLeft = new Vector2d(0, 0);
         this.upperRight = new Vector2d(width-1, height-1);
 
+        initJungle(jungleRatio);
+        noteFreePositions();
+        spawnAnimalsAtRandomFreePositions(animalsCount, true);
+    }
+
+    private void initJungle(double jungleRatio) {
         int jungleWidth = (int)(width * jungleRatio);
         int jungleHeight = (int)(height * jungleRatio);
         int jungleXStart = (width - jungleWidth) / 2;
         int jungleYStart = (height - jungleHeight) / 2;
         this.lowerLeftJungle = new Vector2d(jungleXStart, jungleYStart);
         this.upperRightJungle = new Vector2d(jungleXStart + jungleWidth, jungleYStart + jungleHeight);
+    }
 
+    private void noteFreePositions() {
+        for (int x = this.lowerLeft.x; x < this.upperRight.x; x++)
+            for (int y = this.lowerLeft.y; y < this.upperRight.y; y++)
+                notePositionIfFree(new Vector2d(x, y));
+    }
+
+    private void spawnAnimalsAtRandomFreePositions(int animalsCount, boolean withinJungle) {
         for (int i = 0; i < animalsCount; i++) {
-            Animal animal;
-            do {
-               animal = new Animal(this, true);
-            } while (this.animals.get(animal.position) != null); // Choose a new position if there's an animal already
+            Vector2d position = chooseRandomFreePosition(withinJungle);
+            if (position == null) break;
+            Animal animal = new Animal(this, position);
             place(animal);
         }
-
-        this.plantsInJungleLimit = jungleWidth * jungleHeight;
-        this.plantsInSteppeLimit = width * height - this.plantsInJungleLimit;
     }
 
     /* v IWorldMap implementation v -------------------------------------------------------------------------- */
@@ -108,7 +113,7 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
     public void removeDeadAnimals() {
         for (int i = 0; i < this.animalsList.size(); i++) {
             Animal animal = this.animalsList.get(i);
-            if (animal.getEnergy() <= 0) {
+            if (animal.getEnergy() < this.moveEnergy) {
                 removeAnimal(animal, animal.position);
             }
         }
@@ -154,39 +159,26 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
     }
 
     public void growPlants() {
-        int steppeSpawned = 0;
-        while (this.plantsInSteppe < this.plantsInSteppeLimit && steppeSpawned < Constants.dailyPlantsSpawnCountSteppe) {
-            Vector2d position;
-            do {
-                position = chooseRandomPosition(false);
-            } while(!addPlant(new Plant(position, false)));
-            steppeSpawned++;
+        for (int jungleSpawned = 0; jungleSpawned < Constants.dailyPlantsSpawnCountJungle; jungleSpawned++) {
+            Vector2d position = chooseRandomFreePosition(false);
+            if (position == null) break;
+            addPlant(new Plant(position));
         }
 
-        int jungleSpawned = 0;
-        while (this.plantsInJungle < this.plantsInJungleLimit && jungleSpawned < Constants.dailyPlantsSpawnCountJungle) {
-            Vector2d position;
-            do {
-                position = chooseRandomPosition(true);
-            } while(!addPlant(new Plant(position, true)));
-            jungleSpawned++;
+        for (int steppeSpawned = 0; steppeSpawned < Constants.dailyPlantsSpawnCountSteppe; steppeSpawned++) {
+            Vector2d position = chooseRandomFreePosition(true);
+            if (position == null) break;
+            addPlant(new Plant(position));
         }
     }
     /* ^ Simulation related ^ -------------------------------------------------------------------------------- */
 
     /* v Others v -------------------------------------------------------------------------------------------- */
-    public Vector2d chooseRandomPosition(boolean withinJungle) {
-        Vector2d ll = withinJungle ? this.lowerLeftJungle : this.lowerLeft;
-        Vector2d ur = withinJungle ? this.upperRightJungle : this.upperRight;
-        Vector2d position;
-
-        do {
-            int x = Helper.getRandomIntFromRange(ll.x, ur.x+1);
-            int y = Helper.getRandomIntFromRange(ll.y, ur.y+1);
-            position = new Vector2d(x, y);
-        } while (!withinJungle && this.lowerLeftJungle.precedes(position) && this.upperRight.follows(position));
-
-        return position;
+    public Vector2d chooseRandomFreePosition(boolean withinJungle) {
+        if (withinJungle)
+            return (Vector2d) Helper.getRandomElementFromSet(this.freePositionsJungle);
+        else
+            return (Vector2d) Helper.getRandomElementFromSet(this.freePositionsSteppe);
     }
 
     protected void addAnimal(Animal animal, Vector2d position) {
@@ -195,6 +187,8 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
         // If empty add a new container
         this.animals.computeIfAbsent(position, k -> new ArrayList<>());
         this.animals.get(position).add(animal);
+
+        notePositionIfOccupied(position);
     }
 
     protected void removeAnimal(Animal animal, Vector2d position) {
@@ -204,18 +198,16 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
         // If empty remove the container
         if (this.animals.get(position).size() == 0)
             this.animals.remove(position);
+
+        notePositionIfFree(position);
     }
 
     protected boolean addPlant(Plant plant) {
         this.plantsList.add(plant);
 
-        if (this.plants.get(plant.position) == null) {
+        if (!isOccupied(plant.position)) {
             this.plants.put(plant.position, plant);
-
-            if (plant.isInJungle())
-                this.plantsInJungle++;
-            else
-                this.plantsInSteppe++;
+            notePositionIfOccupied(plant.position);
 
             return true;
         }
@@ -225,13 +217,26 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
 
     protected void removePlant(Plant plant) {
         this.plantsList.remove(plant);
-
         this.plants.remove(plant.position);
+        notePositionIfFree(plant.position);
+    }
 
-        if (plant.isInJungle())
-            this.plantsInJungle--;
-        else
-            this.plantsInSteppe--;
+    protected void notePositionIfOccupied(Vector2d position) {
+        if (isOccupied(position)) {
+            if (isInsideJungle(position))
+                this.freePositionsJungle.remove(position);
+            else
+                this.freePositionsSteppe.remove(position);
+        }
+    }
+
+    protected void notePositionIfFree(Vector2d position) {
+        if (!isOccupied(position)) {
+            if (isInsideJungle(position))
+                this.freePositionsJungle.add(position);
+            else
+                this.freePositionsSteppe.add(position);
+        }
     }
 
     protected List<Animal> getStrongestAnimalsAtPositionEqualEnergy(Vector2d position) {
@@ -250,6 +255,10 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
         }
 
         return strongestAnimalsAtPosition;
+    }
+
+    private boolean isInsideJungle(Vector2d position) {
+        return this.lowerLeftJungle.precedes(position) && this.upperRightJungle.follows(position);
     }
 
     public boolean isAnyAnimalAlive() {
