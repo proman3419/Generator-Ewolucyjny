@@ -30,16 +30,18 @@ public class SimulationDisplayer extends GridPane implements IEpochEndObserver, 
     @Override
     public void run() {
         this.mapDisplayer.update();
-        this.graphsDisplayer.update(0, this.simulationEngine.getAnimalsCount(), 0);
+        this.graphsDisplayer.update(0, 0, 0, 0, 0, 0); // Need to change it later
         positionElements();
         this.simulationEngineThread.start();
     }
 
     @Override
-    public void epochEnded(int epoch, int animalsCount, int plantsCount) {
+    public void epochEnded(int epoch, int animalsCount, int plantsCount, double averageAnimalEnergy,
+                           double averageAnimalLifespan, double averageChildrenCount) {
         Platform.runLater(() -> {
             this.mapDisplayer.update();
-            this.graphsDisplayer.update(epoch, animalsCount, plantsCount);
+            this.graphsDisplayer.update(epoch, animalsCount, plantsCount, averageAnimalEnergy, averageAnimalLifespan,
+                                        averageChildrenCount);
         });
     }
 }

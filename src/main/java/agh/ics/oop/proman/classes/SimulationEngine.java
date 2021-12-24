@@ -7,12 +7,14 @@ import java.util.List;
 
 public class SimulationEngine implements Runnable {
     private final AbstractWorldMap map;
+    private final WorldMapStatistics mapStatistics;
     private final List<IEpochEndObserver> mapChangeObservers = new LinkedList<>();
     private final int moveDelay = 300;
     private int epoch = 0;
 
     public SimulationEngine(AbstractWorldMap map) {
         this.map = map;
+        this.mapStatistics = new WorldMapStatistics(map);
     }
 
     @Override
@@ -33,10 +35,15 @@ public class SimulationEngine implements Runnable {
 
     public void epochEnded() {
         this.epoch++;
+        ageAnimals();
 
         for (IEpochEndObserver mapChangeObserver : this.mapChangeObservers)
-            mapChangeObserver.epochEnded(this.epoch, this.map.getAnimalsCount(), this.map.getPlantsCount());
-
+            mapChangeObserver.epochEnded(this.epoch,
+                                         this.mapStatistics.getAnimalsCount(),
+                                         this.mapStatistics.getPlantsCount(),
+                                         this.mapStatistics.getAverageAnimalEnergy(),
+                                         this.mapStatistics.getAverageAnimalLifespan(),
+                                         this.mapStatistics.getAverageChildrenCount());
         try {
             Thread.sleep(this.moveDelay);
         } catch (InterruptedException e) {
@@ -44,7 +51,8 @@ public class SimulationEngine implements Runnable {
         }
     }
 
-    public int getAnimalsCount() {
-        return this.map.getAnimalsCount();
+    private void ageAnimals() {
+        for (Animal animal : this.map.animalsList)
+            animal.becomeOlder();
     }
 }

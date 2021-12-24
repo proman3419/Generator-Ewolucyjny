@@ -18,6 +18,7 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
     protected Vector2d lowerLeftJungle;
     protected Vector2d upperRightJungle;
     protected final LinkedHashMap<Vector2d, List<Animal>> animals = new LinkedHashMap<>();
+    protected final List<Integer> animalsLifespans = new LinkedList<>();
     protected final List<Animal> animalsList = new LinkedList<>();
     protected final LinkedHashMap<Vector2d, Plant> plants = new LinkedHashMap<>();
     protected final List<Plant> plantsList = new LinkedList<>();
@@ -113,8 +114,10 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
     public void removeDeadAnimals() {
         for (int i = 0; i < this.animalsList.size(); i++) {
             Animal animal = this.animalsList.get(i);
-            if (animal.getEnergy() < this.moveEnergy)
+            if (animal.getEnergy() < this.moveEnergy) {
                 removeAnimal(animal, animal.position);
+                this.animalsLifespans.add(animal.getAge());
+            }
         }
     }
 
@@ -151,6 +154,8 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
                 if (weakerParent.getEnergy() >= Constants.minEnergyToBreed) {
                     Animal child = strongerParent.breed(weakerParent);
                     place(child);
+                    strongerParent.increaseChildrenCount();
+                    weakerParent.increaseChildrenCount();
                 }
             }
         }
@@ -259,7 +264,7 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
     }
 
     public boolean isAnyAnimalAlive() {
-        return getAnimalsCount() > 0;
+        return this.animals.size() > 0;
     }
 
     public Vector2d getLowerLeft() {
@@ -268,14 +273,6 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
 
     public Vector2d getUpperRight() {
         return upperRight;
-    }
-
-    public int getAnimalsCount() {
-        return this.animalsList.size();
-    }
-
-    public int getPlantsCount() {
-        return this.plantsList.size();
     }
     /* ^ Others ^ -------------------------------------------------------------------------------------------- */
 }

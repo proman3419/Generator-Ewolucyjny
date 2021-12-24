@@ -11,6 +11,8 @@ import java.util.List;
 public class Animal extends AbstractWorldMapElement {
     private final AbstractWorldMap map;
     private int energy;
+    private int age = 0;
+    private int childrenCount = 0;
     private final Genome genome;
     private MapDirection orientation;
     private final List<IPositionChangeObserver> observers = new ArrayList<>();
@@ -109,6 +111,22 @@ public class Animal extends AbstractWorldMapElement {
 
     public int getEnergy() {
         return this.energy;
+    }
+
+    public void becomeOlder() {
+        this.age++;
+    }
+
+    public int getAge() {
+        return age;
+    }
+
+    public void increaseChildrenCount() {
+        this.childrenCount++;
+    }
+
+    public int getChildrenCount() {
+        return childrenCount;
     }
 
     @Override
