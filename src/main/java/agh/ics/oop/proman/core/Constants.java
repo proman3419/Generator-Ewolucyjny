@@ -1,7 +1,7 @@
 package agh.ics.oop.proman.core;
 
 public record Constants() {
-    public static final int genesCount = 32;
+    public static final int genesInGenomeCount = 32;
     public static final int minGeneValue = 0;
     public static final int maxGeneValue = 7;
     public static final int minEnergyToBreed = 5;

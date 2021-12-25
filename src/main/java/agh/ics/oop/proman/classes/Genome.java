@@ -27,18 +27,22 @@ public class Genome {
         return this.genes.get(Helper.getRandomIntFromRange(0, this.genes.size()));
     }
 
+    public Gene getGene(int index) {
+        return this.genes.get(index);
+    }
+
     public Genome combine(Genome other, double otherGenesRatio) {
-        int thisGenesCount = (int) (Constants.genesCount * (1 - otherGenesRatio));
-        int otherGenesCount = Constants.genesCount - thisGenesCount;
+        int thisGenesCount = (int) (Constants.genesInGenomeCount * (1 - otherGenesRatio));
+        int otherGenesCount = Constants.genesInGenomeCount - thisGenesCount;
 
         if (GenomSide.getRandomGenomeSide() == GenomSide.LEFT) {
             return new Genome(Stream.concat(this.genes.subList(0, thisGenesCount).stream(),
-                                            other.genes.subList(thisGenesCount, Constants.genesCount).stream())
+                                            other.genes.subList(thisGenesCount, Constants.genesInGenomeCount).stream())
                                     .collect(Collectors.toList()));
         }
         else {
             return new Genome(Stream.concat(other.genes.subList(0, otherGenesCount).stream(),
-                                            this.genes.subList(otherGenesCount, Constants.genesCount).stream())
+                                            this.genes.subList(otherGenesCount, Constants.genesInGenomeCount).stream())
                                     .collect(Collectors.toList()));
         }
     }

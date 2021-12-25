@@ -45,18 +45,20 @@ public class GraphsDisplayer extends GridPane {
         });
     }
 
-    public void update(int epoch, int animalsCount, int plantsCount, double averageAnimalEnergy,
-                       double averageAnimalLifespan, double averageChildrenCount) {
-        updateGraph(this.animalsCountGraph, epoch, animalsCount);
-        updateGraph(this.plantsCountGraph, epoch, plantsCount);
-        updateGraph(this.averageAnimalEnergyGraph, epoch, averageAnimalEnergy);
-        updateGraph(this.averageAnimalLifespanGraph, epoch, averageAnimalLifespan);
-        updateGraph(this.averageChildrenCountGraph, epoch, averageChildrenCount);
-    }
-
     private void updateGraph(ScatterChart<Number, Number> graph, Number xValue, Number yValue) {
         XYChart.Series<Number, Number> dataSeries = new XYChart.Series<>();
         dataSeries.getData().add(new XYChart.Data<>(xValue, yValue));
         graph.getData().add(dataSeries);
+    }
+
+    public void update(int epoch, int animalsCount, int plantsCount, double averageAnimalEnergy,
+                       double averageAnimalLifespan, double averageChildrenCount) {
+        Platform.runLater(() -> {
+            updateGraph(this.animalsCountGraph, epoch, animalsCount);
+            updateGraph(this.plantsCountGraph, epoch, plantsCount);
+            updateGraph(this.averageAnimalEnergyGraph, epoch, averageAnimalEnergy);
+            updateGraph(this.averageAnimalLifespanGraph, epoch, averageAnimalLifespan);
+            updateGraph(this.averageChildrenCountGraph, epoch, averageChildrenCount);
+        });
     }
 }

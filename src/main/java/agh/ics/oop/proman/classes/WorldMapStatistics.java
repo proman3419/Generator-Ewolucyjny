@@ -1,7 +1,9 @@
 package agh.ics.oop.proman.classes;
 
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 public class WorldMapStatistics {
     private AbstractWorldMap map;
@@ -50,5 +52,37 @@ public class WorldMapStatistics {
             childrenSum += animal.getChildrenCount();
 
         return (double) childrenSum / getAnimalsCount();
+    }
+
+    private LinkedHashMap<Genome, Integer> initGenomesToOccurances() {
+        LinkedHashMap<Genome, Integer> genomesToOccurances = new LinkedHashMap<>();
+
+        for (Animal animal : this.map.animalsList) {
+            Genome genome = animal.getGenome();
+            if (genomesToOccurances.containsKey(genome)) {
+                int occurances = genomesToOccurances.get(genome);
+                genomesToOccurances.put(genome, occurances+1);
+            }
+            else
+                genomesToOccurances.put(genome, 1);
+        }
+
+        return genomesToOccurances;
+    }
+
+    public Genome getDominantGenome() {
+        LinkedHashMap<Genome, Integer> genomesToOccurances = initGenomesToOccurances();
+
+        int maxOccurances = 0;
+        Genome maxOccurancesGenome = null;
+        for (Genome genome : genomesToOccurances.keySet()) {
+            int currOccurances = genomesToOccurances.get(genome);
+            if (currOccurances > maxOccurances) {
+                maxOccurances = currOccurances;
+                maxOccurancesGenome = genome;
+            }
+        }
+
+        return maxOccurancesGenome;
     }
 }

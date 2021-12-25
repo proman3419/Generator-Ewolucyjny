@@ -10,4 +10,9 @@ public class Gene {
     public Integer getValue() {
         return value;
     }
+
+    @Override
+    public String toString() {
+        return Integer.toString(this.value);
+    }
 }

@@ -21,7 +21,7 @@ public class Animal extends AbstractWorldMapElement {
         super(initialPosition);
         this.map = map;
         this.energy = map.startEnergy;
-        this.genome = new Genome(Constants.genesCount);
+        this.genome = new Genome(Constants.genesInGenomeCount);
         this.chooseOrientation();
         this.addObserver(map);
     }
@@ -127,6 +127,10 @@ public class Animal extends AbstractWorldMapElement {
 
     public int getChildrenCount() {
         return childrenCount;
+    }
+
+    public Genome getGenome() {
+        return genome;
     }
 
     @Override

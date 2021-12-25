@@ -43,7 +43,8 @@ public class SimulationEngine implements Runnable {
                                          this.mapStatistics.getPlantsCount(),
                                          this.mapStatistics.getAverageAnimalEnergy(),
                                          this.mapStatistics.getAverageAnimalLifespan(),
-                                         this.mapStatistics.getAverageChildrenCount());
+                                         this.mapStatistics.getAverageChildrenCount(),
+                                         this.mapStatistics.getDominantGenome());
         try {
             Thread.sleep(this.moveDelay);
         } catch (InterruptedException e) {

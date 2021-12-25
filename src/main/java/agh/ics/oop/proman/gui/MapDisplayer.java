@@ -28,7 +28,7 @@ public class MapDisplayer extends GridPane {
         this.setGridLinesVisible(true);
     }
 
-    private void displayMap() {
+    private void display() {
         Vector2d ll = this.map.getLowerLeft();
         Vector2d ur = this.map.getUpperRight();
         int maxX = ur.x - ll.x;
@@ -55,7 +55,7 @@ public class MapDisplayer extends GridPane {
             this.getChildren().clear();
             this.getRowConstraints().clear();
             this.getColumnConstraints().clear();
-            displayMap();
+            display();
         });
     }
 }
