@@ -8,22 +8,25 @@ import agh.ics.oop.proman.interfaces.IEpochEndObserver;
 import javafx.application.Platform;
 import javafx.scene.layout.GridPane;
 
-public class SimulationDisplayer extends GridPane implements IEpochEndObserver, Runnable {
+public class Simulation extends GridPane implements IEpochEndObserver, Runnable {
     private final SimulationEngine simulationEngine;
     private final Thread simulationEngineThread;
+    private final SimulationControlPanel simulationControlPanel;
     private final MapDisplayer mapDisplayer;
     private final GraphsDisplayer graphsDisplayer = new GraphsDisplayer();
     private final GenomeDisplayer dominantGenomeDisplayer = new GenomeDisplayer();
 
-    public SimulationDisplayer(SimulationEngine simulationEngine, AbstractWorldMap map) {
+    public Simulation(SimulationEngine simulationEngine, AbstractWorldMap map) {
         this.simulationEngine = simulationEngine;
         this.simulationEngine.addMapChangeObserver(this);
         this.simulationEngineThread = new Thread(this.simulationEngine);
+        this.simulationControlPanel = new SimulationControlPanel(this.simulationEngine);
         this.mapDisplayer = new MapDisplayer(map);
     }
 
     private void positionElements() {
         Platform.runLater(() -> {
+            this.add(this.simulationControlPanel, 0, 2, 1, 1);
             this.add(this.mapDisplayer, 0, 0, 1, 1);
             this.add(this.graphsDisplayer, 1, 0, 1, 1);
             this.add(this.dominantGenomeDisplayer, 0, 1, 1, 1);

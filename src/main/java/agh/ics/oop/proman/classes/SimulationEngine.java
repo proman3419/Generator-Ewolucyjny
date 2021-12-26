@@ -11,6 +11,7 @@ public class SimulationEngine implements Runnable {
     private final List<IEpochEndObserver> mapChangeObservers = new LinkedList<>();
     private final int moveDelay = 300;
     private int epoch = 0;
+    private boolean isPaused = false;
 
     public SimulationEngine(AbstractWorldMap map) {
         this.map = map;
@@ -26,6 +27,34 @@ public class SimulationEngine implements Runnable {
             this.map.animalsBreed();
             this.map.growPlants();
             epochEnded();
+            pauseIfRequested();
+        }
+    }
+
+    public void pause() {
+        this.isPaused = true;
+    }
+
+    public void resume() {
+        this.isPaused = false;
+        synchronized (this) {
+            notify();
+        }
+    }
+
+    public boolean isPaused() {
+        return isPaused;
+    }
+
+    private void pauseIfRequested() {
+        synchronized (this) {
+            while (this.isPaused) {
+                try {
+                    wait();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
 

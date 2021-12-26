@@ -15,39 +15,38 @@ import java.util.LinkedHashMap;
 
 public class App extends Application implements IStartButtonClickObserver {
     private Stage primaryStage;
-    private Menu menu = new Menu(this);
-    private SimulationDisplayer leftSimulationDisplayer;
-    private SimulationDisplayer rightSimulationDisplayer;
+    private Simulation leftSimulation;
     private Thread leftSimulationThread;
+    private Simulation rightSimulation;
     private Thread rightSimulationThread;
     private int width = 1920;
     private int height = 1080;
 
     public void start(Stage primaryStage) {
         this.primaryStage = primaryStage;
-        this.primaryStage.setScene(new Scene(this.menu, this.width, this.height));
+        this.primaryStage.setScene(new Scene(new Menu(this), this.width, this.height));
         this.primaryStage.show();
     }
 
     private void initSimulations(int mapWidth, int mapHeight, int startEnergy, int moveEnergy,
                                  int plantEnergy, double jungleRatio, int animalsCount) {
-        AbstractWorldMap boundedMap = new BoundedWorldMap(mapWidth, mapHeight,
-                startEnergy, moveEnergy, plantEnergy, jungleRatio, animalsCount);
-        SimulationEngine boundedSimulationEngine = new SimulationEngine(boundedMap);
-        this.leftSimulationDisplayer = new SimulationDisplayer(boundedSimulationEngine, boundedMap);
-        this.leftSimulationThread = new Thread(this.leftSimulationDisplayer);
-
         AbstractWorldMap unboundedMap = new UnboundedWorldMap(mapWidth, mapHeight,
                 startEnergy, moveEnergy, plantEnergy, jungleRatio, animalsCount);
         SimulationEngine unboundedSimulationEngine = new SimulationEngine(unboundedMap);
-        this.rightSimulationDisplayer = new SimulationDisplayer(unboundedSimulationEngine, unboundedMap);
-        this.rightSimulationThread = new Thread(this.rightSimulationDisplayer);
+        this.leftSimulation = new Simulation(unboundedSimulationEngine, unboundedMap);
+        this.leftSimulationThread = new Thread(this.leftSimulation);
+
+        AbstractWorldMap boundedMap = new BoundedWorldMap(mapWidth, mapHeight,
+                startEnergy, moveEnergy, plantEnergy, jungleRatio, animalsCount);
+        SimulationEngine boundedSimulationEngine = new SimulationEngine(boundedMap);
+        this.rightSimulation = new Simulation(boundedSimulationEngine, boundedMap);
+        this.rightSimulationThread = new Thread(this.rightSimulation);
     }
 
-    private void placeSimulations() {
+    private void positionElements() {
         GridPane gridPane = new GridPane();
-        gridPane.add(this.leftSimulationDisplayer, 0, 0, 1, 1);
-        gridPane.add(this.rightSimulationDisplayer, 1, 0, 1, 1);
+        gridPane.add(this.leftSimulation, 0, 0, 1, 1);
+        gridPane.add(this.rightSimulation, 1, 0, 1, 1);
         this.primaryStage.setScene(new Scene(gridPane, this.width, this.height));
     }
 
@@ -67,7 +66,7 @@ public class App extends Application implements IStartButtonClickObserver {
         int animalsCount = Integer.parseInt(simulParamToString.get(SimulationParameter.ANIMALS_COUNT));
 
         initSimulations(mapWidth, mapHeight, startEnergy, moveEnergy, plantEnergy, jungleRatio, animalsCount);
-        placeSimulations();
+        positionElements();
         startSimulations();
     }
 }
