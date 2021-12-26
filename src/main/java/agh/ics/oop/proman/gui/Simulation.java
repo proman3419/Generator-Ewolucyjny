@@ -5,10 +5,11 @@ import agh.ics.oop.proman.classes.Genome;
 import agh.ics.oop.proman.classes.SimulationEngine;
 import agh.ics.oop.proman.core.Constants;
 import agh.ics.oop.proman.interfaces.IEpochEndObserver;
+import agh.ics.oop.proman.interfaces.IEventObserver;
 import javafx.application.Platform;
 import javafx.scene.layout.GridPane;
 
-public class Simulation extends GridPane implements IEpochEndObserver, Runnable {
+public class Simulation extends GridPane implements Runnable, IEpochEndObserver, IEventObserver {
     private final SimulationEngine simulationEngine;
     private final Thread simulationEngineThread;
     private final SimulationControlPanel simulationControlPanel;
@@ -19,7 +20,8 @@ public class Simulation extends GridPane implements IEpochEndObserver, Runnable 
 
     public Simulation(SimulationEngine simulationEngine, AbstractWorldMap map) {
         this.simulationEngine = simulationEngine;
-        this.simulationEngine.addMapChangeObserver(this);
+        this.simulationEngine.addEpochEndObserver(this);
+        this.simulationEngine.addEventObserver(this);
         this.simulationEngineThread = new Thread(this.simulationEngine);
         this.simulationControlPanel = new SimulationControlPanel(this.simulationEngine);
         this.mapDisplayer = new MapDisplayer(map);
@@ -53,5 +55,10 @@ public class Simulation extends GridPane implements IEpochEndObserver, Runnable 
                                         averageAnimalLifespan, averageChildrenCount);
             this.dominantGenomeDisplayer.update(dominantGenome);
         });
+    }
+
+    @Override
+    public void eventHappened(String description) {
+        this.textDisplayer.setText(description);
     }
 }

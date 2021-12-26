@@ -2,6 +2,7 @@ package agh.ics.oop.proman.classes;
 
 import agh.ics.oop.proman.core.Constants;
 import agh.ics.oop.proman.enums.MoveDirection;
+import agh.ics.oop.proman.interfaces.IEventObserver;
 import agh.ics.oop.proman.interfaces.IPositionChangeObserver;
 import agh.ics.oop.proman.interfaces.IWorldMap;
 
@@ -26,6 +27,7 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
     protected final List<Plant> plantsList = new LinkedList<>();
     protected final Set<Vector2d> freePositionsSteppe = new HashSet<>();
     protected final Set<Vector2d> freePositionsJungle = new HashSet<>();
+    protected final List<IEventObserver> eventObservers = new LinkedList<>();
 
     public AbstractWorldMap(int width, int height, int startEnergy, int moveEnergy, int plantEnergy, double jungleRatio,
                             int animalsCount, boolean isMagicBreedingAllowed) {
@@ -69,7 +71,7 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
 
     private void spawnAnimalsAtRandomFreePositions(List<Animal> animalsList) {
         for (Animal animal : animalsList) {
-            boolean withinJungle = Helper.getRandomBoolean();
+            boolean withinJungle = Helper.getRandomBoolean(0.5);
             Vector2d position = getRandomFreePosition(withinJungle);
             if (position == null) break;
 
@@ -179,10 +181,11 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
         List<Animal> animalsListCopy = new LinkedList<>(this.animalsList);
         spawnAnimalsAtRandomFreePositions(animalsListCopy);
         this.magicBreedingCount++;
+        eventHappened(String.format("Magic breeding [%d/%d]", this.magicBreedingCount, Constants.maxMagicBreedingCount));
     }
 
     public void animalsBreed() {
-        boolean isMagic = Helper.getRandomBoolean();
+        boolean isMagic = Helper.getRandomBoolean(Constants.magicBreedingProbability);
         if (this.isMagicBreedingAllowed && isMagic && this.magicBreedingCount < Constants.maxMagicBreedingCount)
             animalsBreedMagic();
         else
@@ -301,6 +304,15 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
 
     public Vector2d getUpperRight() {
         return upperRight;
+    }
+
+    public void addEventObserver(IEventObserver eventObserver) {
+        this.eventObservers.add(eventObserver);
+    }
+
+    private void eventHappened(String description) {
+        for (IEventObserver eventObserver : this.eventObservers)
+            eventObserver.eventHappened(description);
     }
     /* ^ Others ^ -------------------------------------------------------------------------------------------- */
 }

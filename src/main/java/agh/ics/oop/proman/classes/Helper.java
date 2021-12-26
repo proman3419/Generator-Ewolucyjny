@@ -10,8 +10,11 @@ public class Helper {
         return (int) ((Math.random() * (max - min)) + min);
     }
 
-    public static boolean getRandomBoolean() {
-        return getRandomIntFromRange(0, 100) < 50;
+    // truthBias from range (0, 1), the higher it is the higher the probability of getting true
+    // assumes min = 0
+    public static boolean getRandomBoolean(double truthBias) {
+        int max = 1000;
+        return getRandomIntFromRange(0, max) < max * truthBias;
     }
 
     public static Comparator<Gene> genesComparator = new Comparator<Gene>() {

@@ -1,14 +1,16 @@
 package agh.ics.oop.proman.classes;
 
 import agh.ics.oop.proman.interfaces.IEpochEndObserver;
+import agh.ics.oop.proman.interfaces.IEventObserver;
 
 import java.util.LinkedList;
 import java.util.List;
 
-public class SimulationEngine implements Runnable {
+public class SimulationEngine implements Runnable, IEventObserver {
     private final AbstractWorldMap map;
     private final WorldMapStatistics mapStatistics;
-    private final List<IEpochEndObserver> mapChangeObservers = new LinkedList<>();
+    private final List<IEpochEndObserver> epochEndObservers = new LinkedList<>();
+    private final List<IEventObserver> eventObservers = new LinkedList<>();
     private final int moveDelay = 300;
     private int epoch = 0;
     private boolean isPaused = false;
@@ -16,6 +18,7 @@ public class SimulationEngine implements Runnable {
     public SimulationEngine(AbstractWorldMap map) {
         this.map = map;
         this.mapStatistics = new WorldMapStatistics(map);
+        this.map.addEventObserver(this);
     }
 
     @Override
@@ -58,15 +61,15 @@ public class SimulationEngine implements Runnable {
         }
     }
 
-    public void addMapChangeObserver(IEpochEndObserver mapChangeObserver) {
-        this.mapChangeObservers.add(mapChangeObserver);
+    public void addEpochEndObserver(IEpochEndObserver epochEndObserver) {
+        this.epochEndObservers.add(epochEndObserver);
     }
 
     public void epochEnded() {
         this.epoch++;
         ageAnimals();
 
-        for (IEpochEndObserver mapChangeObserver : this.mapChangeObservers)
+        for (IEpochEndObserver mapChangeObserver : this.epochEndObservers)
             mapChangeObserver.epochEnded(this.epoch,
                                          this.mapStatistics.getAnimalsCount(),
                                          this.mapStatistics.getPlantsCount(),
@@ -85,5 +88,15 @@ public class SimulationEngine implements Runnable {
     private void ageAnimals() {
         for (Animal animal : this.map.animalsList)
             animal.becomeOlder();
+    }
+
+    public void addEventObserver(IEventObserver eventObserver) {
+        this.eventObservers.add(eventObserver);
+    }
+
+    @Override
+    public void eventHappened(String description) {
+        for (IEventObserver eventObserver : this.eventObservers)
+            eventObserver.eventHappened(description);
     }
 }
