@@ -8,4 +8,5 @@ public record Constants() {
     public static final double energyPassOnBreedRatio = 0.25;
     public static final int dailyPlantsSpawnCountSteppe = 1;
     public static final int dailyPlantsSpawnCountJungle = 1;
+    public static final int maxMagicBreedingCount = 3;
 }

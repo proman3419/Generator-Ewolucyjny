@@ -15,12 +15,12 @@ public class Genome {
         this.genes = new LinkedList<>();
         for (int i = 0; i < genesCount; i++)
             genes.add(new Gene(Helper.getRandomIntFromRange(Constants.minGeneValue, Constants.maxGeneValue+1)));
-
         genes.sort(Helper.genesComparator); // Keep genes in the non-decreasing order
     }
 
     public Genome(List<Gene> genes) {
         this.genes = genes;
+        genes.sort(Helper.genesComparator); // Keep genes in the non-decreasing order
     }
 
     public Gene getRandomGene() {

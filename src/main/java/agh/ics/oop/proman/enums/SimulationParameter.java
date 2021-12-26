@@ -7,7 +7,9 @@ public enum SimulationParameter {
     MOVE_ENERGY,
     PLANT_ENERGY,
     JUNGLE_RATIO,
-    ANIMALS_COUNT;
+    ANIMALS_COUNT,
+    IS_MAGIC_BREEDING_ALLOWED_UM,
+    IS_MAGIC_BREEDING_ALLOWED_BM;
 
     @Override
     public String toString() {
@@ -19,6 +21,8 @@ public enum SimulationParameter {
             case PLANT_ENERGY -> "Plant energy";
             case JUNGLE_RATIO -> "Jungle ratio";
             case ANIMALS_COUNT -> "Animals count";
+            case IS_MAGIC_BREEDING_ALLOWED_UM -> "Magic evolution for UnboundedMap";
+            case IS_MAGIC_BREEDING_ALLOWED_BM -> "Magic evolution for BoundedMap";
         };
     }
 
@@ -31,6 +35,8 @@ public enum SimulationParameter {
             case PLANT_ENERGY -> "2";
             case JUNGLE_RATIO -> "0.25";
             case ANIMALS_COUNT -> "4";
+            case IS_MAGIC_BREEDING_ALLOWED_UM -> "false";
+            case IS_MAGIC_BREEDING_ALLOWED_BM -> "false";
         };
     }
 }

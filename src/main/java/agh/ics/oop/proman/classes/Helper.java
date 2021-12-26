@@ -10,6 +10,10 @@ public class Helper {
         return (int) ((Math.random() * (max - min)) + min);
     }
 
+    public static boolean getRandomBoolean() {
+        return getRandomIntFromRange(0, 100) < 50;
+    }
+
     public static Comparator<Gene> genesComparator = new Comparator<Gene>() {
         @Override
         public int compare(Gene o1, Gene o2) {

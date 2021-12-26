@@ -13,6 +13,8 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
     protected final int startEnergy;
     protected final int moveEnergy;
     protected final int plantEnergy;
+    protected final boolean isMagicBreedingAllowed;
+    protected int magicBreedingCount = 0;
     protected final Vector2d lowerLeft;
     protected final Vector2d upperRight;
     protected Vector2d lowerLeftJungle;
@@ -26,12 +28,13 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
     protected final Set<Vector2d> freePositionsJungle = new HashSet<>();
 
     public AbstractWorldMap(int width, int height, int startEnergy, int moveEnergy, int plantEnergy, double jungleRatio,
-                            int animalsCount) {
+                            int animalsCount, boolean isMagicBreedingAllowed) {
         this.width = width;
         this.height = height;
         this.startEnergy = startEnergy;
         this.moveEnergy = moveEnergy;
         this.plantEnergy = plantEnergy;
+        this.isMagicBreedingAllowed = isMagicBreedingAllowed;
         this.lowerLeft = new Vector2d(0, 0);
         this.upperRight = new Vector2d(width-1, height-1);
 
@@ -57,10 +60,21 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
 
     private void spawnAnimalsAtRandomFreePositions(int animalsCount, boolean withinJungle) {
         for (int i = 0; i < animalsCount; i++) {
-            Vector2d position = chooseRandomFreePosition(withinJungle);
+            Vector2d position = getRandomFreePosition(withinJungle);
             if (position == null) break;
             Animal animal = new Animal(this, position);
             place(animal);
+        }
+    }
+
+    private void spawnAnimalsAtRandomFreePositions(List<Animal> animalsList) {
+        for (Animal animal : animalsList) {
+            boolean withinJungle = Helper.getRandomBoolean();
+            Vector2d position = getRandomFreePosition(withinJungle);
+            if (position == null) break;
+
+            Animal animalCopy = new Animal(this, position, this.startEnergy, animal.getGenome());
+            place(animalCopy);
         }
     }
 
@@ -144,7 +158,7 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
             removePlant(plant);
     }
 
-    public void animalsBreed() {
+    private void animalsBreedNormal() {
         for (Vector2d position : this.animals.keySet()) {
             if (this.animals.get(position).size() > 1) {
                 this.animals.get(position).sort(Helper.animalEnergyComparator);
@@ -161,15 +175,29 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
         }
     }
 
+    protected void animalsBreedMagic() {
+        List<Animal> animalsListCopy = new LinkedList<>(this.animalsList);
+        spawnAnimalsAtRandomFreePositions(animalsListCopy);
+        this.magicBreedingCount++;
+    }
+
+    public void animalsBreed() {
+        boolean isMagic = Helper.getRandomBoolean();
+        if (this.isMagicBreedingAllowed && isMagic && this.magicBreedingCount < Constants.maxMagicBreedingCount)
+            animalsBreedMagic();
+        else
+            animalsBreedNormal();
+    }
+
     public void growPlants() {
         for (int jungleSpawned = 0; jungleSpawned < Constants.dailyPlantsSpawnCountJungle; jungleSpawned++) {
-            Vector2d position = chooseRandomFreePosition(false);
+            Vector2d position = getRandomFreePosition(false);
             if (position == null) break;
             addPlant(new Plant(position));
         }
 
         for (int steppeSpawned = 0; steppeSpawned < Constants.dailyPlantsSpawnCountSteppe; steppeSpawned++) {
-            Vector2d position = chooseRandomFreePosition(true);
+            Vector2d position = getRandomFreePosition(true);
             if (position == null) break;
             addPlant(new Plant(position));
         }
@@ -177,7 +205,7 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
     /* ^ Simulation related ^ -------------------------------------------------------------------------------- */
 
     /* v Others v -------------------------------------------------------------------------------------------- */
-    public Vector2d chooseRandomFreePosition(boolean withinJungle) {
+    public Vector2d getRandomFreePosition(boolean withinJungle) {
         if (withinJungle)
             return (Vector2d) Helper.getRandomElementFromSet(this.freePositionsJungle);
         else

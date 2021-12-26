@@ -2,8 +2,8 @@ package agh.ics.oop.proman.classes;
 
 public class UnboundedWorldMap extends AbstractWorldMap {
     public UnboundedWorldMap(int width, int height, int startEnergy, int moveEnergy, int plantEnergy, double jungleRatio,
-                            int animalsCount) {
-        super(width, height, startEnergy, moveEnergy, plantEnergy, jungleRatio, animalsCount);
+                            int animalsCount, boolean isMagicBreedingAllowed) {
+        super(width, height, startEnergy, moveEnergy, plantEnergy, jungleRatio, animalsCount, isMagicBreedingAllowed);
     }
 
     public Vector2d positionToUnboundedPosition(Vector2d position) {

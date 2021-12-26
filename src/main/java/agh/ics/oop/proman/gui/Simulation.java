@@ -15,6 +15,7 @@ public class Simulation extends GridPane implements IEpochEndObserver, Runnable 
     private final MapDisplayer mapDisplayer;
     private final GraphsDisplayer graphsDisplayer = new GraphsDisplayer();
     private final GenomeDisplayer dominantGenomeDisplayer = new GenomeDisplayer();
+    private final TextDisplayer textDisplayer = new TextDisplayer();
 
     public Simulation(SimulationEngine simulationEngine, AbstractWorldMap map) {
         this.simulationEngine = simulationEngine;
@@ -30,6 +31,7 @@ public class Simulation extends GridPane implements IEpochEndObserver, Runnable 
             this.add(this.mapDisplayer, 0, 0, 1, 1);
             this.add(this.graphsDisplayer, 1, 0, 1, 1);
             this.add(this.dominantGenomeDisplayer, 0, 1, 1, 1);
+            this.add(this.textDisplayer, 0, 3, 1, 1);
         });
     }
 

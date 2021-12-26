@@ -29,15 +29,16 @@ public class App extends Application implements IStartButtonClickObserver {
     }
 
     private void initSimulations(int mapWidth, int mapHeight, int startEnergy, int moveEnergy,
-                                 int plantEnergy, double jungleRatio, int animalsCount) {
+                                 int plantEnergy, double jungleRatio, int animalsCount,
+                                 boolean isMagicBreedingAllowedUM, boolean isMagicBreedingAllowedBM) {
         AbstractWorldMap unboundedMap = new UnboundedWorldMap(mapWidth, mapHeight,
-                startEnergy, moveEnergy, plantEnergy, jungleRatio, animalsCount);
+                startEnergy, moveEnergy, plantEnergy, jungleRatio, animalsCount, isMagicBreedingAllowedUM);
         SimulationEngine unboundedSimulationEngine = new SimulationEngine(unboundedMap);
         this.leftSimulation = new Simulation(unboundedSimulationEngine, unboundedMap);
         this.leftSimulationThread = new Thread(this.leftSimulation);
 
         AbstractWorldMap boundedMap = new BoundedWorldMap(mapWidth, mapHeight,
-                startEnergy, moveEnergy, plantEnergy, jungleRatio, animalsCount);
+                startEnergy, moveEnergy, plantEnergy, jungleRatio, animalsCount, isMagicBreedingAllowedBM);
         SimulationEngine boundedSimulationEngine = new SimulationEngine(boundedMap);
         this.rightSimulation = new Simulation(boundedSimulationEngine, boundedMap);
         this.rightSimulationThread = new Thread(this.rightSimulation);
@@ -64,8 +65,13 @@ public class App extends Application implements IStartButtonClickObserver {
         int plantEnergy = Integer.parseInt(simulParamToString.get(SimulationParameter.PLANT_ENERGY));
         double jungleRatio = Double.parseDouble(simulParamToString.get(SimulationParameter.JUNGLE_RATIO));
         int animalsCount = Integer.parseInt(simulParamToString.get(SimulationParameter.ANIMALS_COUNT));
+        boolean isMagicBreedingAllowedUM = Boolean.parseBoolean(
+                simulParamToString.get(SimulationParameter.IS_MAGIC_BREEDING_ALLOWED_UM));
+        boolean isMagicBreedingAllowedBM = Boolean.parseBoolean(
+                simulParamToString.get(SimulationParameter.IS_MAGIC_BREEDING_ALLOWED_BM));
 
-        initSimulations(mapWidth, mapHeight, startEnergy, moveEnergy, plantEnergy, jungleRatio, animalsCount);
+        initSimulations(mapWidth, mapHeight, startEnergy, moveEnergy, plantEnergy, jungleRatio, animalsCount,
+                        isMagicBreedingAllowedUM, isMagicBreedingAllowedBM);
         positionElements();
         startSimulations();
     }
