@@ -12,13 +12,15 @@ public class SimulationEngine implements Runnable, IEventObserver {
     private final List<IEpochEndObserver> epochEndObservers = new LinkedList<>();
     private final List<IEventObserver> eventObservers = new LinkedList<>();
     private final int moveDelay = 300;
-    private int epoch = 0;
+    private Epoch epoch;
     private boolean isPaused = false;
+    private boolean isFinished = false;
 
     public SimulationEngine(AbstractWorldMap map) {
         this.map = map;
         this.mapStatistics = new WorldMapStatistics(map);
         this.map.addEventObserver(this);
+        this.epoch = getCurrentEpoch(-1);
     }
 
     @Override
@@ -32,6 +34,7 @@ public class SimulationEngine implements Runnable, IEventObserver {
             epochEnded();
             pauseIfRequested();
         }
+        this.isFinished = true;
     }
 
     public void pause() {
@@ -61,22 +64,33 @@ public class SimulationEngine implements Runnable, IEventObserver {
         }
     }
 
+    public boolean isFinished() {
+        return isFinished;
+    }
+
+    private Epoch getCurrentEpoch(int prevEpochId) {
+        return new Epoch(prevEpochId + 1,
+                         this.mapStatistics.getAnimalsCount(),
+                         this.mapStatistics.getPlantsCount(),
+                         this.mapStatistics.getAverageAnimalEnergy(),
+                         this.mapStatistics.getAverageAnimalLifespan(),
+                         this.mapStatistics.getAverageChildrenCount(),
+                         this.mapStatistics.getDominantGenome());
+    }
+
     public void addEpochEndObserver(IEpochEndObserver epochEndObserver) {
         this.epochEndObservers.add(epochEndObserver);
     }
 
-    public void epochEnded() {
-        this.epoch++;
-        ageAnimals();
+    public void epochEndedNotify() {
+        for (IEpochEndObserver epochEndObserver : this.epochEndObservers)
+            epochEndObserver.epochEnded(this.epoch);
+    }
 
-        for (IEpochEndObserver mapChangeObserver : this.epochEndObservers)
-            mapChangeObserver.epochEnded(this.epoch,
-                                         this.mapStatistics.getAnimalsCount(),
-                                         this.mapStatistics.getPlantsCount(),
-                                         this.mapStatistics.getAverageAnimalEnergy(),
-                                         this.mapStatistics.getAverageAnimalLifespan(),
-                                         this.mapStatistics.getAverageChildrenCount(),
-                                         this.mapStatistics.getDominantGenome());
+    private void epochEnded() {
+        this.epoch = getCurrentEpoch(this.epoch.getId());
+        ageAnimals();
+        epochEndedNotify();
 
         try {
             Thread.sleep(this.moveDelay);

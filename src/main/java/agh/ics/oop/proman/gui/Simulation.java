@@ -1,9 +1,9 @@
 package agh.ics.oop.proman.gui;
 
 import agh.ics.oop.proman.classes.AbstractWorldMap;
-import agh.ics.oop.proman.classes.Genome;
+import agh.ics.oop.proman.classes.Epoch;
+import agh.ics.oop.proman.classes.ReportGenerator;
 import agh.ics.oop.proman.classes.SimulationEngine;
-import agh.ics.oop.proman.core.Constants;
 import agh.ics.oop.proman.interfaces.IEpochEndObserver;
 import agh.ics.oop.proman.interfaces.IEventObserver;
 import javafx.application.Platform;
@@ -17,13 +17,15 @@ public class Simulation extends GridPane implements Runnable, IEpochEndObserver,
     private final GraphsDisplayer graphsDisplayer = new GraphsDisplayer();
     private final GenomeDisplayer dominantGenomeDisplayer = new GenomeDisplayer();
     private final TextDisplayer textDisplayer = new TextDisplayer();
+    private final ReportGenerator reportGenerator = new ReportGenerator();
 
     public Simulation(SimulationEngine simulationEngine, AbstractWorldMap map) {
         this.simulationEngine = simulationEngine;
         this.simulationEngine.addEpochEndObserver(this);
         this.simulationEngine.addEventObserver(this);
+        this.simulationEngine.epochEndedNotify(); // Init epoch ended
         this.simulationEngineThread = new Thread(this.simulationEngine);
-        this.simulationControlPanel = new SimulationControlPanel(this.simulationEngine);
+        this.simulationControlPanel = new SimulationControlPanel(this.simulationEngine, reportGenerator);
         this.mapDisplayer = new MapDisplayer(map);
     }
 
@@ -39,21 +41,17 @@ public class Simulation extends GridPane implements Runnable, IEpochEndObserver,
 
     @Override
     public void run() {
-        this.mapDisplayer.update();
-        this.graphsDisplayer.update(0, 0, 0, 0, 0, 0);
-        this.dominantGenomeDisplayer.update(new Genome(Constants.genesInGenomeCount));
         positionElements();
         this.simulationEngineThread.start();
     }
 
     @Override
-    public void epochEnded(int epoch, int animalsCount, int plantsCount, double averageAnimalEnergy,
-                           double averageAnimalLifespan, double averageChildrenCount, Genome dominantGenome) {
+    public void epochEnded(Epoch epoch) {
         Platform.runLater(() -> {
             this.mapDisplayer.update();
-            this.graphsDisplayer.update(epoch, animalsCount, plantsCount, averageAnimalEnergy,
-                                        averageAnimalLifespan, averageChildrenCount);
-            this.dominantGenomeDisplayer.update(dominantGenome);
+            this.graphsDisplayer.update(epoch);
+            this.dominantGenomeDisplayer.update(epoch.getDominantGenome());
+            this.reportGenerator.feed(epoch);
         });
     }
 

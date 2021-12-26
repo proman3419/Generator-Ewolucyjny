@@ -1,5 +1,6 @@
 package agh.ics.oop.proman.gui;
 
+import agh.ics.oop.proman.classes.Epoch;
 import javafx.application.Platform;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.ScatterChart;
@@ -51,14 +52,13 @@ public class GraphsDisplayer extends GridPane {
         graph.getData().add(dataSeries);
     }
 
-    public void update(int epoch, int animalsCount, int plantsCount, double averageAnimalEnergy,
-                       double averageAnimalLifespan, double averageChildrenCount) {
+    public void update(Epoch epoch) {
         Platform.runLater(() -> {
-            updateGraph(this.animalsCountGraph, epoch, animalsCount);
-            updateGraph(this.plantsCountGraph, epoch, plantsCount);
-            updateGraph(this.averageAnimalEnergyGraph, epoch, averageAnimalEnergy);
-            updateGraph(this.averageAnimalLifespanGraph, epoch, averageAnimalLifespan);
-            updateGraph(this.averageChildrenCountGraph, epoch, averageChildrenCount);
+            updateGraph(this.animalsCountGraph, epoch.getId(), epoch.getAnimalsCount());
+            updateGraph(this.plantsCountGraph, epoch.getId(), epoch.getPlantsCount());
+            updateGraph(this.averageAnimalEnergyGraph, epoch.getId(), epoch.getAverageAnimalEnergy());
+            updateGraph(this.averageAnimalLifespanGraph, epoch.getId(), epoch.getAverageAnimalLifespan());
+            updateGraph(this.averageChildrenCountGraph, epoch.getId(), epoch.getAverageChildrenCount());
         });
     }
 }
