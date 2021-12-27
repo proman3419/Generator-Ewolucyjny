@@ -1,7 +1,8 @@
 package agh.ics.oop.proman.Gui.Displayers;
 
 import agh.ics.oop.proman.MapElements.Animal.Genome;
-import agh.ics.oop.proman.Settings.Constants;
+import agh.ics.oop.proman.Settings.GuiConstants;
+import agh.ics.oop.proman.Settings.SimulationConstants;
 import javafx.application.Platform;
 import javafx.geometry.HPos;
 import javafx.geometry.VPos;
@@ -12,12 +13,12 @@ import javafx.scene.text.Font;
 
 public class GenomeDisplayer extends GridPane {
     private void display(Genome genome) {
-        for (int i = 0; i < Constants.genesInGenomeCount; i++) {
+        for (int i = 0; i < SimulationConstants.genesInGenomeCount; i++) {
             String labelContent = genome == null ? "-" : genome.getGene(i).toString();
             Label label = new Label(labelContent);
-            label.setFont(new Font(24));
+            label.setFont(new Font(GuiConstants.genomeDisplayerFontSize));
             this.add(label, i, 0, 1, 1);
-            this.getColumnConstraints().add(new ColumnConstraints(22));
+            this.getColumnConstraints().add(new ColumnConstraints(GuiConstants.genomeDisplayerSegmentWidth));
             GridPane.setHalignment(label, HPos.CENTER);
             GridPane.setValignment(label, VPos.CENTER);
         }

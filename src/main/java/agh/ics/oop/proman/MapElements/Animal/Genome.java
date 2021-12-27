@@ -1,7 +1,7 @@
 package agh.ics.oop.proman.MapElements.Animal;
 
 import agh.ics.oop.proman.Classes.Helper;
-import agh.ics.oop.proman.Settings.Constants;
+import agh.ics.oop.proman.Settings.SimulationConstants;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -14,7 +14,7 @@ public class Genome {
     public Genome(int genesCount) {
         this.genes = new LinkedList<>();
         for (int i = 0; i < genesCount; i++)
-            genes.add(new Gene(Helper.getRandomIntFromRange(Constants.minGeneValue, Constants.maxGeneValue+1)));
+            genes.add(new Gene(Helper.getRandomIntFromRange(SimulationConstants.minGeneValue, SimulationConstants.maxGeneValue+1)));
         genes.sort(Helper.genesComparator); // Keep genes in the non-decreasing order
     }
 
@@ -32,17 +32,17 @@ public class Genome {
     }
 
     public Genome combine(Genome other, double otherGenesRatio) {
-        int thisGenesCount = (int) (Constants.genesInGenomeCount * (1 - otherGenesRatio));
-        int otherGenesCount = Constants.genesInGenomeCount - thisGenesCount;
+        int thisGenesCount = (int) (SimulationConstants.genesInGenomeCount * (1 - otherGenesRatio));
+        int otherGenesCount = SimulationConstants.genesInGenomeCount - thisGenesCount;
 
         if (GenomSide.getRandom() == GenomSide.LEFT) {
             return new Genome(Stream.concat(this.genes.subList(0, thisGenesCount).stream(),
-                                            other.genes.subList(thisGenesCount, Constants.genesInGenomeCount).stream())
+                                            other.genes.subList(thisGenesCount, SimulationConstants.genesInGenomeCount).stream())
                                     .collect(Collectors.toList()));
         }
         else {
             return new Genome(Stream.concat(other.genes.subList(0, otherGenesCount).stream(),
-                                            this.genes.subList(otherGenesCount, Constants.genesInGenomeCount).stream())
+                                            this.genes.subList(otherGenesCount, SimulationConstants.genesInGenomeCount).stream())
                                     .collect(Collectors.toList()));
         }
     }

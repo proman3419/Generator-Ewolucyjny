@@ -5,7 +5,7 @@ import agh.ics.oop.proman.MapElements.Animal.Animal;
 import agh.ics.oop.proman.MapElements.Plant;
 import agh.ics.oop.proman.Classes.Helper;
 import agh.ics.oop.proman.Entities.Vector2d;
-import agh.ics.oop.proman.Settings.Constants;
+import agh.ics.oop.proman.Settings.SimulationConstants;
 import agh.ics.oop.proman.Enums.MoveDirection;
 import agh.ics.oop.proman.Observers.IEventObserver;
 import agh.ics.oop.proman.Observers.IPositionChangeObserver;
@@ -173,7 +173,7 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
                 Animal strongerParent = this.animals.get(position).get(0);
                 Animal weakerParent = this.animals.get(position).get(1);
 
-                if (weakerParent.getEnergy() >= Constants.minEnergyToBreed) {
+                if (weakerParent.getEnergy() >= SimulationConstants.minEnergyToBreed) {
                     Animal child = strongerParent.breed(weakerParent);
                     place(child);
                     strongerParent.increaseChildrenCount();
@@ -187,25 +187,25 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
         List<Animal> animalsListCopy = new LinkedList<>(this.animalsList);
         spawnAnimalsAtRandomFreePositions(animalsListCopy);
         this.magicBreedingCount++;
-        eventHappened(String.format("Magic breeding [%d/%d]", this.magicBreedingCount, Constants.maxMagicBreedingCount));
+        eventHappened(String.format("Magic breeding [%d/%d]", this.magicBreedingCount, SimulationConstants.maxMagicBreedingCount));
     }
 
     public void animalsBreed() {
-        boolean isMagic = Helper.getRandomBoolean(Constants.magicBreedingProbability);
-        if (this.isMagicBreedingAllowed && isMagic && this.magicBreedingCount < Constants.maxMagicBreedingCount)
+        boolean isMagic = Helper.getRandomBoolean(SimulationConstants.magicBreedingProbability);
+        if (this.isMagicBreedingAllowed && isMagic && this.magicBreedingCount < SimulationConstants.maxMagicBreedingCount)
             animalsBreedMagic();
         else
             animalsBreedNormal();
     }
 
     public void growPlants() {
-        for (int jungleSpawned = 0; jungleSpawned < Constants.dailyPlantsSpawnCountJungle; jungleSpawned++) {
+        for (int jungleSpawned = 0; jungleSpawned < SimulationConstants.dailyPlantsSpawnCountJungle; jungleSpawned++) {
             Vector2d position = getRandomFreePosition(false);
             if (position == null) break;
             addPlant(new Plant(position));
         }
 
-        for (int steppeSpawned = 0; steppeSpawned < Constants.dailyPlantsSpawnCountSteppe; steppeSpawned++) {
+        for (int steppeSpawned = 0; steppeSpawned < SimulationConstants.dailyPlantsSpawnCountSteppe; steppeSpawned++) {
             Vector2d position = getRandomFreePosition(true);
             if (position == null) break;
             addPlant(new Plant(position));
@@ -325,6 +325,14 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
 
     public List<Animal> getAnimalsList() {
         return animalsList;
+    }
+
+    public int getStartEnergy() {
+        return startEnergy;
+    }
+
+    public int getPlantEnergy() {
+        return plantEnergy;
     }
     //endregion Getters ------------------------------------------------------------------------------------------------
 }

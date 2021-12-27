@@ -1,8 +1,10 @@
 package agh.ics.oop.proman.Gui;
 
 import agh.ics.oop.proman.MapElements.IMapElement;
+import agh.ics.oop.proman.Settings.GuiConstants;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
+import javafx.scene.control.ProgressBar;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
@@ -17,7 +19,7 @@ public class GuiElementBox {
         this.mapElement = mapElement;
     }
 
-    public VBox getGuiRepresentation() {
+    public VBox getGuiRepresentation(int energy, int maxEnergy) {
         if (this.mapElement == null)
             return new VBox();
 
@@ -28,12 +30,14 @@ public class GuiElementBox {
             e.printStackTrace();
         }
         ImageView imageView = new ImageView(image);
-        imageView.setFitWidth(30);
-        imageView.setFitHeight(30);
+        imageView.setFitWidth(GuiConstants.guiElementBoxImageSize);
+        imageView.setFitHeight(GuiConstants.guiElementBoxImageSize);
 
-        Label label = new Label(this.mapElement.toLabelString());
+        ProgressBar energyBar = new ProgressBar();
+        double energyRatio = (double) energy / maxEnergy;
+        energyBar.setProgress(energyRatio > 1 ? 1 : energyRatio);
 
-        VBox vBox = new VBox(imageView, label);
+        VBox vBox = new VBox(imageView, energyBar);
         vBox.setAlignment(Pos.CENTER);
 
         return vBox;

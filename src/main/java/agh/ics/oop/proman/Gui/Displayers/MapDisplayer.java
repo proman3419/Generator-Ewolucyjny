@@ -1,8 +1,11 @@
 package agh.ics.oop.proman.Gui.Displayers;
 
 import agh.ics.oop.proman.Gui.GuiElementBox;
+import agh.ics.oop.proman.MapElements.AbstractWorldMapElement;
+import agh.ics.oop.proman.MapElements.Animal.Animal;
 import agh.ics.oop.proman.Maps.AbstractWorldMap;
 import agh.ics.oop.proman.Entities.Vector2d;
+import agh.ics.oop.proman.Settings.GuiConstants;
 import javafx.application.Platform;
 import javafx.geometry.HPos;
 import javafx.geometry.VPos;
@@ -20,10 +23,10 @@ public class MapDisplayer extends GridPane {
 
     private void formatGrid(int maxX, int maxY) {
         for (int y = 0; y <= maxY; y++)
-            this.getRowConstraints().add(new RowConstraints(60));
+            this.getRowConstraints().add(new RowConstraints(GuiConstants.guiElementBoxSize));
 
         for (int x = 0; x <= maxX; x++)
-            this.getColumnConstraints().add(new ColumnConstraints(60));
+            this.getColumnConstraints().add(new ColumnConstraints(GuiConstants.guiElementBoxSize));
 
         this.setGridLinesVisible(false);
         this.setGridLinesVisible(true);
@@ -39,16 +42,24 @@ public class MapDisplayer extends GridPane {
             for (int x = 0; x <= maxX; x++) {
                 int mapX = ll.x + x;
                 int mapY = ur.y - y;
-
-                GuiElementBox guiElementBox = new GuiElementBox(this.map.objectAt(new Vector2d(mapX, mapY)));
-                VBox vBox = guiElementBox.getGuiRepresentation();
-                this.add(vBox, x, y, 1, 1);
-                GridPane.setHalignment(vBox, HPos.CENTER);
-                GridPane.setValignment(vBox, VPos.CENTER);
+                addGuiRepresentation(x, y, mapX, mapY);
             }
         }
 
         formatGrid(maxX, maxY);
+    }
+
+    private void addGuiRepresentation(int x, int y, int mapX, int mapY) {
+        AbstractWorldMapElement objectAt = this.map.objectAt(new Vector2d(mapX, mapY));
+        GuiElementBox guiElementBox = new GuiElementBox(objectAt);
+        VBox vBox;
+        if (objectAt instanceof Animal)
+            vBox = guiElementBox.getGuiRepresentation(((Animal) objectAt).getEnergy(), this.map.getStartEnergy());
+        else
+            vBox = guiElementBox.getGuiRepresentation(this.map.getPlantEnergy(), this.map.getStartEnergy());
+        this.add(vBox, x, y, 1, 1);
+        GridPane.setHalignment(vBox, HPos.CENTER);
+        GridPane.setValignment(vBox, VPos.CENTER);
     }
 
     public void update() {

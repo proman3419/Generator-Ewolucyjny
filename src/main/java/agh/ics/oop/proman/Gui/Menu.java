@@ -1,5 +1,6 @@
 package agh.ics.oop.proman.Gui;
 
+import agh.ics.oop.proman.Settings.GuiConstants;
 import agh.ics.oop.proman.Settings.IParameter;
 import agh.ics.oop.proman.Settings.SimulationParameter;
 import agh.ics.oop.proman.Settings.GuiParameter;
@@ -31,8 +32,9 @@ public class Menu extends GridPane {
 
     private void addSectionTitleLabel(String title) {
         Label titleLabel = new Label(title);
-        titleLabel.setFont(Font.font("Arial", FontWeight.BOLD,20));
-        titleLabel.setPadding(new Insets(10,0,5,0));
+        titleLabel.setFont(Font.font(GuiConstants.menuFontFamily, FontWeight.BOLD,
+                                     GuiConstants.menuSectionTitleFontSize));
+        titleLabel.setPadding(new Insets(10,0,5,5));
 
         this.add(titleLabel, 0, this.currRow, 1, 1);
         this.currRow++;
@@ -40,8 +42,8 @@ public class Menu extends GridPane {
 
     private void addControlTitleLabel(String title) {
         Label titleLabel = new Label(title);
-        titleLabel.setFont(Font.font("Arial", 16));
-        titleLabel.setPadding(new Insets(3,5,3,0));
+        titleLabel.setFont(Font.font(GuiConstants.menuFontFamily, GuiConstants.menuControlFontSize));
+        titleLabel.setPadding(new Insets(5,10,5,10));
 
         this.add(titleLabel, 0, this.currRow, 1, 1);
     }
@@ -67,6 +69,7 @@ public class Menu extends GridPane {
 
     private void addTextField(IParameter parameter) {
         TextField textField = new TextField(parameter.getDefaultValue());
+        textField.setFont(Font.font(GuiConstants.menuFontFamily, GuiConstants.menuControlFontSize));
         this.add(textField, 1, this.currRow, 1, 1);
         this.parameterToControl.put(parameter, textField);
     }

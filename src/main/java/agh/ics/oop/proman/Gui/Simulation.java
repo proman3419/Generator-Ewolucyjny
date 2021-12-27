@@ -1,7 +1,7 @@
 package agh.ics.oop.proman.Gui;
 
 import agh.ics.oop.proman.Gui.Displayers.GenomeDisplayer;
-import agh.ics.oop.proman.Gui.Displayers.GraphsDisplayer;
+import agh.ics.oop.proman.Gui.Displayers.ChartsDisplayer;
 import agh.ics.oop.proman.Gui.Displayers.MapDisplayer;
 import agh.ics.oop.proman.Gui.Displayers.TextDisplayer;
 import agh.ics.oop.proman.Maps.AbstractWorldMap;
@@ -18,7 +18,7 @@ public class Simulation extends GridPane implements Runnable, IEpochEndObserver,
     private final Thread simulationEngineThread;
     private final SimulationControlPanel simulationControlPanel;
     private final MapDisplayer mapDisplayer;
-    private final GraphsDisplayer graphsDisplayer = new GraphsDisplayer();
+    private final ChartsDisplayer chartsDisplayer = new ChartsDisplayer();
     private final GenomeDisplayer dominantGenomeDisplayer = new GenomeDisplayer();
     private final TextDisplayer textDisplayer = new TextDisplayer();
     private final ReportGenerator reportGenerator = new ReportGenerator();
@@ -37,7 +37,7 @@ public class Simulation extends GridPane implements Runnable, IEpochEndObserver,
         Platform.runLater(() -> {
             this.add(this.simulationControlPanel, 0, 2, 1, 1);
             this.add(this.mapDisplayer, 0, 0, 1, 1);
-            this.add(this.graphsDisplayer, 1, 0, 1, 1);
+            this.add(this.chartsDisplayer, 1, 0, 1, 1);
             this.add(this.dominantGenomeDisplayer, 0, 1, 1, 1);
             this.add(this.textDisplayer, 0, 3, 1, 1);
         });
@@ -53,7 +53,7 @@ public class Simulation extends GridPane implements Runnable, IEpochEndObserver,
     public void epochEnded(Epoch epoch) {
         Platform.runLater(() -> {
             this.mapDisplayer.update();
-            this.graphsDisplayer.update(epoch);
+            this.chartsDisplayer.update(epoch);
             this.dominantGenomeDisplayer.update(epoch.getDominantGenome());
             this.reportGenerator.feed(epoch);
         });

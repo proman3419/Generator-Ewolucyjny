@@ -1,6 +1,6 @@
 package agh.ics.oop.proman.Settings;
 
-public record Constants() {
+public record SimulationConstants() {
     public static final int genesInGenomeCount = 32;
     public static final int minGeneValue = 0;
     public static final int maxGeneValue = 7;

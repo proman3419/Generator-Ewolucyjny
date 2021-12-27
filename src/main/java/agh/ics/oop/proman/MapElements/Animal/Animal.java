@@ -4,7 +4,7 @@ import agh.ics.oop.proman.MapElements.AbstractWorldMapElement;
 import agh.ics.oop.proman.Maps.AbstractWorldMap;
 import agh.ics.oop.proman.Maps.UnboundedWorldMap;
 import agh.ics.oop.proman.Entities.Vector2d;
-import agh.ics.oop.proman.Settings.Constants;
+import agh.ics.oop.proman.Settings.SimulationConstants;
 import agh.ics.oop.proman.Enums.MapDirection;
 import agh.ics.oop.proman.Enums.MoveDirection;
 import agh.ics.oop.proman.Observers.IPositionChangeObserver;
@@ -25,7 +25,7 @@ public class Animal extends AbstractWorldMapElement {
         super(initialPosition);
         this.map = map;
         this.energy = startEnergy;
-        this.genome = new Genome(Constants.genesInGenomeCount);
+        this.genome = new Genome(SimulationConstants.genesInGenomeCount);
         this.chooseOrientation();
         this.addObserver(map);
     }
@@ -83,9 +83,9 @@ public class Animal extends AbstractWorldMapElement {
 
     // Assumes that other.energy <= this.energy
     public Animal breed(Animal other) {
-        int childEnergy = (int) (Constants.energyPassOnBreedRatio * (this.energy + other.energy));
-        this.energy -= Constants.energyPassOnBreedRatio * this.energy;
-        other.energy -= Constants.energyPassOnBreedRatio * other.energy;
+        int childEnergy = (int) (SimulationConstants.energyPassOnBreedRatio * (this.energy + other.energy));
+        this.energy -= SimulationConstants.energyPassOnBreedRatio * this.energy;
+        other.energy -= SimulationConstants.energyPassOnBreedRatio * other.energy;
 
         double otherGenesRatio = (double) other.energy / ((double) (other.energy + this.energy));
         Genome childGenome = this.genome.combine(other.genome, otherGenesRatio);
