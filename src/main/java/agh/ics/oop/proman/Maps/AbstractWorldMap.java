@@ -5,7 +5,7 @@ import agh.ics.oop.proman.MapElements.Animal.Animal;
 import agh.ics.oop.proman.MapElements.Plant;
 import agh.ics.oop.proman.Classes.Helper;
 import agh.ics.oop.proman.Entities.Vector2d;
-import agh.ics.oop.proman.Core.Constants;
+import agh.ics.oop.proman.Settings.Constants;
 import agh.ics.oop.proman.Enums.MoveDirection;
 import agh.ics.oop.proman.Observers.IEventObserver;
 import agh.ics.oop.proman.Observers.IPositionChangeObserver;

@@ -1,7 +1,7 @@
 package agh.ics.oop.proman.Gui.Displayers;
 
 import agh.ics.oop.proman.MapElements.Animal.Genome;
-import agh.ics.oop.proman.Core.Constants;
+import agh.ics.oop.proman.Settings.Constants;
 import javafx.application.Platform;
 import javafx.geometry.HPos;
 import javafx.geometry.VPos;

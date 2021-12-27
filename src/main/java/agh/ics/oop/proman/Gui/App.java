@@ -4,8 +4,10 @@ import agh.ics.oop.proman.Maps.AbstractWorldMap;
 import agh.ics.oop.proman.Maps.BoundedWorldMap;
 import agh.ics.oop.proman.Classes.SimulationEngine;
 import agh.ics.oop.proman.Maps.UnboundedWorldMap;
-import agh.ics.oop.proman.Enums.SimulationParameter;
+import agh.ics.oop.proman.Settings.IParameter;
+import agh.ics.oop.proman.Settings.SimulationParameter;
 import agh.ics.oop.proman.Observers.IStartButtonClickObserver;
+import agh.ics.oop.proman.Settings.GuiParameter;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.layout.GridPane;
@@ -19,12 +21,10 @@ public class App extends Application implements IStartButtonClickObserver {
     private Thread leftSimulationThread;
     private Simulation rightSimulation;
     private Thread rightSimulationThread;
-    private int width = 1920;
-    private int height = 1080;
 
     public void start(Stage primaryStage) {
         this.primaryStage = primaryStage;
-        this.primaryStage.setScene(new Scene(new Menu(this), this.width, this.height));
+        this.primaryStage.setScene(new Scene(new Menu(this)));
         this.primaryStage.show();
     }
 
@@ -44,11 +44,11 @@ public class App extends Application implements IStartButtonClickObserver {
         this.rightSimulationThread = new Thread(this.rightSimulation);
     }
 
-    private void positionElements() {
+    private void positionElements(int appWidth, int appHeight) {
         GridPane gridPane = new GridPane();
         gridPane.add(this.leftSimulation, 0, 0, 1, 1);
         gridPane.add(this.rightSimulation, 1, 0, 1, 1);
-        this.primaryStage.setScene(new Scene(gridPane, this.width, this.height));
+        this.primaryStage.setScene(new Scene(gridPane, appWidth, appHeight));
     }
 
     private void startSimulations() {
@@ -57,22 +57,25 @@ public class App extends Application implements IStartButtonClickObserver {
     }
 
     @Override
-    public void startButtonClicked(LinkedHashMap<SimulationParameter, String> simulParamToString) {
-        int mapWidth = Integer.parseInt(simulParamToString.get(SimulationParameter.MAP_WIDTH));
-        int mapHeight = Integer.parseInt(simulParamToString.get(SimulationParameter.MAP_HEIGHT));
-        int startEnergy = Integer.parseInt(simulParamToString.get(SimulationParameter.START_ENERGY));
-        int moveEnergy = Integer.parseInt(simulParamToString.get(SimulationParameter.MOVE_ENERGY));
-        int plantEnergy = Integer.parseInt(simulParamToString.get(SimulationParameter.PLANT_ENERGY));
-        double jungleRatio = Double.parseDouble(simulParamToString.get(SimulationParameter.JUNGLE_RATIO));
-        int animalsCount = Integer.parseInt(simulParamToString.get(SimulationParameter.ANIMALS_COUNT));
+    public void startButtonClicked(LinkedHashMap<IParameter, String> parameterToString) {
+        int mapWidth = Integer.parseInt(parameterToString.get(SimulationParameter.MAP_WIDTH));
+        int mapHeight = Integer.parseInt(parameterToString.get(SimulationParameter.MAP_HEIGHT));
+        int startEnergy = Integer.parseInt(parameterToString.get(SimulationParameter.START_ENERGY));
+        int moveEnergy = Integer.parseInt(parameterToString.get(SimulationParameter.MOVE_ENERGY));
+        int plantEnergy = Integer.parseInt(parameterToString.get(SimulationParameter.PLANT_ENERGY));
+        double jungleRatio = Double.parseDouble(parameterToString.get(SimulationParameter.JUNGLE_RATIO));
+        int animalsCount = Integer.parseInt(parameterToString.get(SimulationParameter.ANIMALS_COUNT));
         boolean isMagicBreedingAllowedUM = Boolean.parseBoolean(
-                simulParamToString.get(SimulationParameter.IS_MAGIC_BREEDING_ALLOWED_UM));
+                parameterToString.get(SimulationParameter.IS_MAGIC_BREEDING_ALLOWED_UM));
         boolean isMagicBreedingAllowedBM = Boolean.parseBoolean(
-                simulParamToString.get(SimulationParameter.IS_MAGIC_BREEDING_ALLOWED_BM));
+                parameterToString.get(SimulationParameter.IS_MAGIC_BREEDING_ALLOWED_BM));
+
+        int appWidth = Integer.parseInt(parameterToString.get(GuiParameter.APP_WIDTH));
+        int appHeight = Integer.parseInt(parameterToString.get(GuiParameter.APP_HEIGHT));
 
         initSimulations(mapWidth, mapHeight, startEnergy, moveEnergy, plantEnergy, jungleRatio, animalsCount,
                         isMagicBreedingAllowedUM, isMagicBreedingAllowedBM);
-        positionElements();
+        positionElements(appWidth, appHeight);
         startSimulations();
     }
 }

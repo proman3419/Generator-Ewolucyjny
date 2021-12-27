@@ -4,7 +4,7 @@ import agh.ics.oop.proman.MapElements.AbstractWorldMapElement;
 import agh.ics.oop.proman.Maps.AbstractWorldMap;
 import agh.ics.oop.proman.Maps.UnboundedWorldMap;
 import agh.ics.oop.proman.Entities.Vector2d;
-import agh.ics.oop.proman.Core.Constants;
+import agh.ics.oop.proman.Settings.Constants;
 import agh.ics.oop.proman.Enums.MapDirection;
 import agh.ics.oop.proman.Enums.MoveDirection;
 import agh.ics.oop.proman.Observers.IPositionChangeObserver;

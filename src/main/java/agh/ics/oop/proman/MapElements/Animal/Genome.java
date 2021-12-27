@@ -1,7 +1,7 @@
 package agh.ics.oop.proman.MapElements.Animal;
 
 import agh.ics.oop.proman.Classes.Helper;
-import agh.ics.oop.proman.Core.Constants;
+import agh.ics.oop.proman.Settings.Constants;
 
 import java.util.LinkedList;
 import java.util.List;

@@ -1,18 +1,19 @@
 package agh.ics.oop.proman.Gui;
 
-import agh.ics.oop.proman.Enums.SimulationParameter;
-import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
+import agh.ics.oop.proman.Settings.IParameter;
+import agh.ics.oop.proman.Settings.SimulationParameter;
+import agh.ics.oop.proman.Settings.GuiParameter;
+import javafx.geometry.Insets;
+import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 
 import java.util.LinkedHashMap;
 
 public class Menu extends GridPane {
     private final App app;
-    private final LinkedHashMap<SimulationParameter, CheckBox> simulParamToCheckBox = new LinkedHashMap<>();
-    private final LinkedHashMap<SimulationParameter, TextField> simulParamToTextField = new LinkedHashMap<>();
+    private final LinkedHashMap<IParameter, Control> parameterToControl = new LinkedHashMap<>();
     private int currRow = 0;
 
     public Menu(App app) {
@@ -21,18 +22,56 @@ public class Menu extends GridPane {
     }
 
     private void addElements() {
-        for (SimulationParameter simulParam : SimulationParameter.values()) {
-            this.add(new Label(simulParam.toString()), 0, this.currRow, 1, 1);
+        addSectionTitleLabel("Simulation settings");
+        addElements(SimulationParameter.values());
+        addSectionTitleLabel("App settings");
+        addElements(GuiParameter.values());
+        addStartButton();
+    }
 
-            if (simulParam == SimulationParameter.IS_MAGIC_BREEDING_ALLOWED_UM ||
-                simulParam == SimulationParameter.IS_MAGIC_BREEDING_ALLOWED_BM)
-                addCheckBox(simulParam);
-            else
-                addTextField(simulParam);
+    private void addSectionTitleLabel(String title) {
+        Label titleLabel = new Label(title);
+        titleLabel.setFont(Font.font("Arial", FontWeight.BOLD,20));
+        titleLabel.setPadding(new Insets(10,0,5,0));
 
+        this.add(titleLabel, 0, this.currRow, 1, 1);
+        this.currRow++;
+    }
+
+    private void addControlTitleLabel(String title) {
+        Label titleLabel = new Label(title);
+        titleLabel.setFont(Font.font("Arial", 16));
+        titleLabel.setPadding(new Insets(3,5,3,0));
+
+        this.add(titleLabel, 0, this.currRow, 1, 1);
+    }
+
+    private void addElements(IParameter[] parameters) {
+        for (IParameter parameter : parameters) {
+            switch (parameter.getInputGuiControlType()) {
+                case TEXT_FIELD: {addTextField(parameter); break;}
+                case CHECK_BOX: {addCheckBox(parameter); break;}
+                case NONE: continue;
+            }
+            addControlTitleLabel(parameter.toString());
             this.currRow++;
         }
+    }
 
+    private void addCheckBox(IParameter parameter) {
+        CheckBox checkBox = new CheckBox();
+        checkBox.setIndeterminate(Boolean.parseBoolean(parameter.getDefaultValue()));
+        this.add(checkBox, 1, this.currRow, 1, 1);
+        this.parameterToControl.put(parameter, checkBox);
+    }
+
+    private void addTextField(IParameter parameter) {
+        TextField textField = new TextField(parameter.getDefaultValue());
+        this.add(textField, 1, this.currRow, 1, 1);
+        this.parameterToControl.put(parameter, textField);
+    }
+
+    private void addStartButton() {
         Button startButton = new Button("Simulate");
         this.add(startButton, 1, this.currRow, 1, 1);
 
@@ -41,30 +80,22 @@ public class Menu extends GridPane {
         });
     }
 
-    private void addCheckBox(SimulationParameter simulParam) {
-        CheckBox checkBox = new CheckBox();
-        checkBox.setIndeterminate(Boolean.parseBoolean(simulParam.getDefaultValue()));
-        this.add(checkBox, 1, this.currRow, 1, 1);
-        this.simulParamToCheckBox.put(simulParam, checkBox);
-    }
+    private LinkedHashMap<IParameter, String> parseInputs() {
+        LinkedHashMap<IParameter, String> parameterToString = new LinkedHashMap<>();
 
-    private void addTextField(SimulationParameter simulParam) {
-        TextField textField = new TextField(simulParam.getDefaultValue());
-        this.add(textField, 1, this.currRow, 1, 1);
-        this.simulParamToTextField.put(simulParam, textField);
-    }
-
-    private LinkedHashMap<SimulationParameter, String> parseInputs() {
-        LinkedHashMap<SimulationParameter, String> simulParamToString = new LinkedHashMap<>();
-
-        for (SimulationParameter simulParam : this.simulParamToCheckBox.keySet()) {
-            boolean value = this.simulParamToCheckBox.get(simulParam).isSelected();
-            simulParamToString.put(simulParam, value ? "true" : "false");
+        for (IParameter parameter : this.parameterToControl.keySet()) {
+            String parameterValue = "";
+            switch (parameter.getInputGuiControlType()) {
+                case TEXT_FIELD: {parameterValue = ((TextField) this.parameterToControl.get(parameter)).getText();
+                                  break;}
+                case CHECK_BOX: {parameterValue = ((CheckBox) this.parameterToControl.get(parameter)).isSelected()
+                                                 ? "true" : "false";
+                                  break;}
+                case NONE: continue;
+            }
+            parameterToString.put(parameter, parameterValue);
         }
 
-        for (SimulationParameter simulParam : this.simulParamToTextField.keySet())
-            simulParamToString.put(simulParam, this.simulParamToTextField.get(simulParam).getText());
-
-        return simulParamToString;
+        return parameterToString;
     }
 }

@@ -1,6 +1,9 @@
-package agh.ics.oop.proman.Enums;
+package agh.ics.oop.proman.Settings;
 
-public enum SimulationParameter {
+import static agh.ics.oop.proman.Settings.GuiControlType.CHECK_BOX;
+import static agh.ics.oop.proman.Settings.GuiControlType.TEXT_FIELD;
+
+public enum SimulationParameter implements IParameter {
     MAP_WIDTH,
     MAP_HEIGHT,
     START_ENERGY,
@@ -26,6 +29,7 @@ public enum SimulationParameter {
         };
     }
 
+    @Override
     public String getDefaultValue() {
         return switch (this) {
             case MAP_WIDTH -> "12";
@@ -37,6 +41,21 @@ public enum SimulationParameter {
             case ANIMALS_COUNT -> "4";
             case IS_MAGIC_BREEDING_ALLOWED_UM -> "false";
             case IS_MAGIC_BREEDING_ALLOWED_BM -> "false";
+        };
+    }
+
+    @Override
+    public GuiControlType getInputGuiControlType() {
+        return switch (this) {
+            case MAP_WIDTH -> TEXT_FIELD;
+            case MAP_HEIGHT -> TEXT_FIELD;
+            case START_ENERGY -> TEXT_FIELD;
+            case MOVE_ENERGY -> TEXT_FIELD;
+            case PLANT_ENERGY -> TEXT_FIELD;
+            case JUNGLE_RATIO -> TEXT_FIELD;
+            case ANIMALS_COUNT -> TEXT_FIELD;
+            case IS_MAGIC_BREEDING_ALLOWED_UM -> CHECK_BOX;
+            case IS_MAGIC_BREEDING_ALLOWED_BM -> CHECK_BOX;
         };
     }
 }

@@ -1,4 +1,4 @@
-package agh.ics.oop.proman.Core;
+package agh.ics.oop.proman.Settings;
 
 public record Constants() {
     public static final int genesInGenomeCount = 32;
