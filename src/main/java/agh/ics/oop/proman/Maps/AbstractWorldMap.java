@@ -49,6 +49,7 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
         spawnAnimalsAtRandomFreePositions(animalsCount, true);
     }
 
+    //region Init related ----------------------------------------------------------------------------------------------
     private void initJungle(double jungleRatio) {
         int jungleWidth = (int)(width * jungleRatio);
         int jungleHeight = (int)(height * jungleRatio);
@@ -68,7 +69,7 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
         for (int i = 0; i < animalsCount; i++) {
             Vector2d position = getRandomFreePosition(withinJungle);
             if (position == null) break;
-            Animal animal = new Animal(this, position);
+            Animal animal = new Animal(this, position, this.startEnergy);
             place(animal);
         }
     }
@@ -83,8 +84,9 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
             place(animalCopy);
         }
     }
+    //endregion Init related -------------------------------------------------------------------------------------------
 
-    /* v IWorldMap implementation v -------------------------------------------------------------------------- */
+    //region IWorldMap implementation ----------------------------------------------------------------------------------
     @Override
     public boolean canMoveTo(Vector2d position) {
         return this.lowerLeft.precedes(position) && this.upperRight.follows(position);
@@ -128,9 +130,9 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
             addAnimal(animal, newPosition);
         }
     }
-    /* ^ IWorldMap implementation ^ -------------------------------------------------------------------------- */
+    //endregion IWorldMap implementation -------------------------------------------------------------------------------
 
-    /* v Simulation related v -------------------------------------------------------------------------------- */
+    //region Simulation related ----------------------------------------------------------------------------------------
     public void removeDeadAnimals() {
         for (int i = 0; i < this.animalsList.size(); i++) {
             Animal animal = this.animalsList.get(i);
@@ -143,7 +145,7 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
 
     public void animalsMove() {
         for (int i = 0; i < this.animalsList.size(); i++)
-            this.animalsList.get(i).move(MoveDirection.getRandomMoveDirection(), this.moveEnergy);
+            this.animalsList.get(i).move(MoveDirection.getRandom(), this.moveEnergy);
     }
 
     public void animalsEat() {
@@ -209,9 +211,9 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
             addPlant(new Plant(position));
         }
     }
-    /* ^ Simulation related ^ -------------------------------------------------------------------------------- */
+    //endregion Simulation related -------------------------------------------------------------------------------------
 
-    /* v Others v -------------------------------------------------------------------------------------------- */
+    //region Others ----------------------------------------------------------------------------------------------------
     public Vector2d getRandomFreePosition(boolean withinJungle) {
         if (withinJungle)
             return (Vector2d) Helper.getRandomElementFromSet(this.freePositionsJungle);
@@ -302,14 +304,6 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
         return this.animals.size() > 0;
     }
 
-    public Vector2d getLowerLeft() {
-        return lowerLeft;
-    }
-
-    public Vector2d getUpperRight() {
-        return upperRight;
-    }
-
     public void addEventObserver(IEventObserver eventObserver) {
         this.eventObservers.add(eventObserver);
     }
@@ -318,13 +312,19 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
         for (IEventObserver eventObserver : this.eventObservers)
             eventObserver.eventHappened(description);
     }
+    //endregion Others -------------------------------------------------------------------------------------------------
 
-    public int getStartEnergy() {
-        return startEnergy;
+    //region Getters ---------------------------------------------------------------------------------------------------
+    public Vector2d getLowerLeft() {
+        return lowerLeft;
+    }
+
+    public Vector2d getUpperRight() {
+        return upperRight;
     }
 
     public List<Animal> getAnimalsList() {
         return animalsList;
     }
-    /* ^ Others ^ -------------------------------------------------------------------------------------------- */
+    //endregion Getters ------------------------------------------------------------------------------------------------
 }

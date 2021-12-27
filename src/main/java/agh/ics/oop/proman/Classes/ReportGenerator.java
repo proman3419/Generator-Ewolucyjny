@@ -9,7 +9,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class ReportGenerator {
-    private List<Epoch> epochs = new LinkedList<>();
+    private final List<Epoch> epochs = new LinkedList<>();
 
     public void feed(Epoch epoch) {
         this.epochs.add(epoch);

@@ -6,7 +6,7 @@ import agh.ics.oop.proman.MapElements.Animal.Genome;
 import java.util.LinkedHashMap;
 
 public class WorldMapStatistics {
-    private AbstractWorldMap map;
+    private final AbstractWorldMap map;
 
     public WorldMapStatistics(AbstractWorldMap map) {
         this.map = map;

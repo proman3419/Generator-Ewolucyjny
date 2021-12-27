@@ -7,12 +7,14 @@ public class Gene {
         this.value = value;
     }
 
-    public Integer getValue() {
-        return value;
-    }
-
     @Override
     public String toString() {
         return Integer.toString(this.value);
     }
+
+    //region Getters ---------------------------------------------------------------------------------------------------
+    public Integer getValue() {
+        return value;
+    }
+    //endregion Getters ------------------------------------------------------------------------------------------------
 }

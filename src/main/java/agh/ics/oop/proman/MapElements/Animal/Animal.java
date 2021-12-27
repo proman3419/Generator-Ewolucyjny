@@ -21,10 +21,10 @@ public class Animal extends AbstractWorldMapElement {
     private MapDirection orientation;
     private final List<IPositionChangeObserver> observers = new ArrayList<>();
 
-    public Animal(AbstractWorldMap map, Vector2d initialPosition) {
+    public Animal(AbstractWorldMap map, Vector2d initialPosition, int startEnergy) {
         super(initialPosition);
         this.map = map;
-        this.energy = map.getStartEnergy();
+        this.energy = startEnergy;
         this.genome = new Genome(Constants.genesInGenomeCount);
         this.chooseOrientation();
         this.addObserver(map);
@@ -38,10 +38,6 @@ public class Animal extends AbstractWorldMapElement {
         this.genome = genome;
         this.chooseOrientation();
         this.addObserver(map);
-    }
-
-    public MapDirection getOrientation() {
-        return orientation;
     }
 
     @Override
@@ -58,6 +54,7 @@ public class Animal extends AbstractWorldMapElement {
         };
     }
 
+    //region Animal's activities ---------------------------------------------------------------------------------------
     public void move(MoveDirection direction, int moveEnergy) {
         switch (direction) {
             case RIGHT -> this.orientation = this.orientation.next();
@@ -80,19 +77,6 @@ public class Animal extends AbstractWorldMapElement {
         this.energy -= moveEnergy;
     }
 
-    private void addObserver(IPositionChangeObserver observer) {
-        this.observers.add(observer);
-    }
-
-    private void removeObserver(IPositionChangeObserver observer) {
-        this.observers.remove(observer);
-    }
-
-    private void positionChanged(Vector2d oldPosition, Vector2d newPosition, AbstractWorldMapElement objectAtOldPosition) {
-        for (IPositionChangeObserver observer : this.observers)
-            observer.positionChanged(oldPosition, newPosition, objectAtOldPosition);
-    }
-
     public void chooseOrientation() {
         this.orientation = MapDirection.fromInteger(this.genome.getRandomGene().getValue());
     }
@@ -113,32 +97,28 @@ public class Animal extends AbstractWorldMapElement {
         this.energy += energyGain;
     }
 
-    public int getEnergy() {
-        return this.energy;
-    }
-
     public void becomeOlder() {
         this.age++;
-    }
-
-    public int getAge() {
-        return age;
     }
 
     public void increaseChildrenCount() {
         this.childrenCount++;
     }
+    //endregion Animal's activities ------------------------------------------------------------------------------------
 
-    public int getChildrenCount() {
-        return childrenCount;
+    //region IPositionChangeObserver related ---------------------------------------------------------------------------
+    private void addObserver(IPositionChangeObserver observer) {
+        this.observers.add(observer);
     }
 
-    public Genome getGenome() {
-        return genome;
+    private void positionChanged(Vector2d oldPosition, Vector2d newPosition,
+                                 AbstractWorldMapElement objectAtOldPosition) {
+        for (IPositionChangeObserver observer : this.observers)
+            observer.positionChanged(oldPosition, newPosition, objectAtOldPosition);
     }
+    //endregion IPositionChangeObserver related ------------------------------------------------------------------------
 
-
-
+    //region IMapElement implementation --------------------------------------------------------------------------------
     @Override
     public String getRepresentationImagePath() {
         return "src/main/resources/down.png";
@@ -148,4 +128,23 @@ public class Animal extends AbstractWorldMapElement {
     public String toLabelString() {
         return this + Integer.toString(this.energy);
     }
+    //endregion IMapElement implementation -----------------------------------------------------------------------------
+
+    //region Getters ---------------------------------------------------------------------------------------------------
+    public int getEnergy() {
+        return this.energy;
+    }
+
+    public int getAge() {
+        return age;
+    }
+
+    public int getChildrenCount() {
+        return childrenCount;
+    }
+
+    public Genome getGenome() {
+        return genome;
+    }
+    //endregion Getters ------------------------------------------------------------------------------------------------
 }

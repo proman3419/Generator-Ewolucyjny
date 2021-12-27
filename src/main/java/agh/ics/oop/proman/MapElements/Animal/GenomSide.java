@@ -6,7 +6,7 @@ public enum GenomSide {
     LEFT,
     RIGHT;
 
-    public static GenomSide getRandomGenomeSide() {
+    public static GenomSide getRandom() {
         GenomSide[] values = GenomSide.values();
         int randomIndex = Helper.getRandomIntFromRange(0, values.length);
 

@@ -11,7 +11,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 
 public class GuiElementBox {
-    private IMapElement mapElement;
+    private final IMapElement mapElement;
 
     public GuiElementBox(IMapElement mapElement) {
         this.mapElement = mapElement;

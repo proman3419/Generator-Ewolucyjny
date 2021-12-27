@@ -12,7 +12,7 @@ import javafx.scene.layout.RowConstraints;
 import javafx.scene.layout.VBox;
 
 public class MapDisplayer extends GridPane {
-    private AbstractWorldMap map;
+    private final AbstractWorldMap map;
 
     public MapDisplayer(AbstractWorldMap map) {
         this.map = map;

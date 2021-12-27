@@ -9,10 +9,7 @@ public abstract class AbstractWorldMapElement implements IMapElement {
         this.position = position;
     }
 
-    public Vector2d getPosition() {
-        return position;
-    }
-
+    //region IMapElement implementation --------------------------------------------------------------------------------
     @Override
     public String getRepresentationImagePath() {
         return "";
@@ -21,5 +18,10 @@ public abstract class AbstractWorldMapElement implements IMapElement {
     @Override
     public String toLabelString() {
         return "";
+    }
+    //endregion IMapElement implementation -----------------------------------------------------------------------------
+
+    public Vector2d getPosition() {
+        return position;
     }
 }

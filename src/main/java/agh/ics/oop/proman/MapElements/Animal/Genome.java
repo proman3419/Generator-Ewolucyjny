@@ -35,7 +35,7 @@ public class Genome {
         int thisGenesCount = (int) (Constants.genesInGenomeCount * (1 - otherGenesRatio));
         int otherGenesCount = Constants.genesInGenomeCount - thisGenesCount;
 
-        if (GenomSide.getRandomGenomeSide() == GenomSide.LEFT) {
+        if (GenomSide.getRandom() == GenomSide.LEFT) {
             return new Genome(Stream.concat(this.genes.subList(0, thisGenesCount).stream(),
                                             other.genes.subList(thisGenesCount, Constants.genesInGenomeCount).stream())
                                     .collect(Collectors.toList()));

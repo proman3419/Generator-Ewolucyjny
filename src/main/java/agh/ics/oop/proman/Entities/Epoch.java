@@ -24,6 +24,7 @@ public class Epoch {
         this.dominantGenome = dominantGenome;
     }
 
+    //region Getters ---------------------------------------------------------------------------------------------------
     public int getId() {
         return id;
     }
@@ -51,6 +52,7 @@ public class Epoch {
     public Genome getDominantGenome() {
         return dominantGenome;
     }
+    //endregion Getters ------------------------------------------------------------------------------------------------
 
     public Epoch cumulate(Epoch other) {
         return new Epoch(this.id,

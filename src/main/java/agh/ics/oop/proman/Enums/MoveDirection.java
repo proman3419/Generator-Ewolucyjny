@@ -8,7 +8,7 @@ public enum MoveDirection {
     RIGHT,
     LEFT;
 
-    public static MoveDirection getRandomMoveDirection() {
+    public static MoveDirection getRandom() {
         MoveDirection[] values = MoveDirection.values();
         int randomIndex = Helper.getRandomIntFromRange(0, values.length);
 

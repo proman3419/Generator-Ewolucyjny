@@ -27,6 +27,7 @@ public class SimulationEngine implements Runnable, IEventObserver {
         this.epoch = getCurrentEpoch(-1);
     }
 
+    //region Simulation control related --------------------------------------------------------------------------------
     @Override
     public void run() {
         while (map.isAnyAnimalAlive()) {
@@ -71,7 +72,9 @@ public class SimulationEngine implements Runnable, IEventObserver {
     public boolean isFinished() {
         return isFinished;
     }
+    //endregion Simulation control related -----------------------------------------------------------------------------
 
+    //region Epoch related ---------------------------------------------------------------------------------------------
     private Epoch getCurrentEpoch(int prevEpochId) {
         return new Epoch(prevEpochId + 1,
                          this.mapStatistics.getAnimalsCount(),
@@ -107,7 +110,9 @@ public class SimulationEngine implements Runnable, IEventObserver {
         for (Animal animal : this.map.getAnimalsList())
             animal.becomeOlder();
     }
+    //endregion Epoch related ------------------------------------------------------------------------------------------
 
+    //region Events related --------------------------------------------------------------------------------------------
     public void addEventObserver(IEventObserver eventObserver) {
         this.eventObservers.add(eventObserver);
     }
@@ -117,4 +122,5 @@ public class SimulationEngine implements Runnable, IEventObserver {
         for (IEventObserver eventObserver : this.eventObservers)
             eventObserver.eventHappened(description);
     }
+    //endregion Events related -----------------------------------------------------------------------------------------
 }
