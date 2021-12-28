@@ -21,14 +21,14 @@ public class Helper {
         return getRandomIntFromRange(0, max) < max * truthBias;
     }
 
-    public static Comparator<Gene> genesComparator = new Comparator<Gene>() {
+    public final static Comparator<Gene> genesComparator = new Comparator<Gene>() {
         @Override
         public int compare(Gene o1, Gene o2) {
             return o1.getValue().compareTo(o2.getValue());
         }
     };
 
-    public static Comparator<Animal> animalEnergyComparator = new Comparator<Animal>() {
+    public final static Comparator<Animal> animalEnergyComparator = new Comparator<Animal>() {
         @Override
         public int compare(Animal o1, Animal o2) {
             return Integer.compare(o2.getEnergy(), o1.getEnergy());

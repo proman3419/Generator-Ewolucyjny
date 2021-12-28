@@ -1,16 +1,15 @@
 package agh.ics.oop.proman.Gui;
 
-import agh.ics.oop.proman.Gui.Displayers.GenomeDisplayer;
-import agh.ics.oop.proman.Gui.Displayers.ChartsDisplayer;
-import agh.ics.oop.proman.Gui.Displayers.MapDisplayer;
-import agh.ics.oop.proman.Gui.Displayers.MagicBreedingDisplayer;
-import agh.ics.oop.proman.Maps.AbstractWorldMap;
-import agh.ics.oop.proman.Entities.Epoch;
 import agh.ics.oop.proman.Classes.ReportGenerator;
 import agh.ics.oop.proman.Classes.SimulationEngine;
+import agh.ics.oop.proman.Entities.Epoch;
+import agh.ics.oop.proman.Gui.Displayers.ChartsDisplayer;
+import agh.ics.oop.proman.Gui.Displayers.GenomeDisplayer;
+import agh.ics.oop.proman.Gui.Displayers.MagicBreedingDisplayer;
+import agh.ics.oop.proman.Gui.Displayers.MapDisplayer;
+import agh.ics.oop.proman.Maps.AbstractWorldMap;
 import agh.ics.oop.proman.Observers.IEpochEndObserver;
 import agh.ics.oop.proman.Observers.IMagicBreedingObserver;
-import agh.ics.oop.proman.Settings.GuiConstants;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.scene.layout.GridPane;

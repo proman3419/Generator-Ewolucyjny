@@ -243,16 +243,12 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
         notePositionIfFree(position);
     }
 
-    protected boolean addPlant(Plant plant) {
+    protected void addPlant(Plant plant) {
         if (!isOccupied(plant.getPosition())) {
             this.plantsList.add(plant);
             this.plants.put(plant.getPosition(), plant);
             notePositionIfOccupied(plant.getPosition());
-
-            return true;
         }
-
-        return false;
     }
 
     protected void removePlant(Plant plant) {

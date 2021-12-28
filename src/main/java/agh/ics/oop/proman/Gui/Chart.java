@@ -1,12 +1,9 @@
 package agh.ics.oop.proman.Gui;
 
 import agh.ics.oop.proman.Settings.GuiConstants;
-import javafx.scene.Node;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.ScatterChart;
 import javafx.scene.chart.XYChart;
-import javafx.scene.effect.Effect;
-import javafx.scene.paint.Color;
 
 public class Chart {
     private final NumberAxis xAxis;

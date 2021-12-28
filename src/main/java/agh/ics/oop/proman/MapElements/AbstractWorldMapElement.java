@@ -14,14 +14,11 @@ public abstract class AbstractWorldMapElement implements IMapElement {
     public String getRepresentationImagePath() {
         return "";
     }
-
-    @Override
-    public String toLabelString() {
-        return "";
-    }
     //endregion IMapElement implementation -----------------------------------------------------------------------------
 
+    //region Getters ---------------------------------------------------------------------------------------------------
     public Vector2d getPosition() {
         return position;
     }
+    //endregion Getters ------------------------------------------------------------------------------------------------
 }

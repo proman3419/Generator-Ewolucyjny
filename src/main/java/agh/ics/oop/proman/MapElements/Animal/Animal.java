@@ -132,11 +132,6 @@ public class Animal extends AbstractWorldMapElement {
             case NORTHWEST -> "src/main/resources/northwest.png";
         };
     }
-
-    @Override
-    public String toLabelString() {
-        return this + Integer.toString(this.energy);
-    }
     //endregion IMapElement implementation -----------------------------------------------------------------------------
 
     //region Getters ---------------------------------------------------------------------------------------------------
