@@ -14,7 +14,7 @@ public class Plant extends AbstractWorldMapElement {
 
     @Override
     public String getRepresentationImagePath() {
-        return "src/main/resources/grass.png";
+        return "src/main/resources/plant.png";
     }
 
     @Override

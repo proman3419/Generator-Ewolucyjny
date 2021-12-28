@@ -121,7 +121,16 @@ public class Animal extends AbstractWorldMapElement {
     //region IMapElement implementation --------------------------------------------------------------------------------
     @Override
     public String getRepresentationImagePath() {
-        return "src/main/resources/down.png";
+        return switch (this.orientation) {
+            case NORTH -> "src/main/resources/north.png";
+            case NORTHEAST -> "src/main/resources/northeast.png";
+            case EAST -> "src/main/resources/east.png";
+            case SOUTHEAST -> "src/main/resources/southeast.png";
+            case SOUTH -> "src/main/resources/south.png";
+            case SOUTHWEST -> "src/main/resources/southwest.png";
+            case WEST -> "src/main/resources/west.png";
+            case NORTHWEST -> "src/main/resources/northwest.png";
+        };
     }
 
     @Override
