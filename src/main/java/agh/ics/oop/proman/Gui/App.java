@@ -9,6 +9,7 @@ import agh.ics.oop.proman.Settings.SimulationParameter;
 import agh.ics.oop.proman.Observers.IStartButtonClickObserver;
 import agh.ics.oop.proman.Settings.GuiParameter;
 import javafx.application.Application;
+import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
@@ -44,6 +45,11 @@ public class App extends Application implements IStartButtonClickObserver {
         this.rightSimulationThread = new Thread(this.rightSimulation);
     }
 
+    private void styleElements() {
+        this.leftSimulation.setPadding(new Insets(0,20,0,0));
+        this.rightSimulation.setPadding(new Insets(0,0,0,20));
+    }
+
     private void positionElements(int appWidth, int appHeight) {
         GridPane gridPane = new GridPane();
         gridPane.add(this.leftSimulation, 0, 0, 1, 1);
@@ -75,6 +81,7 @@ public class App extends Application implements IStartButtonClickObserver {
 
         initSimulations(mapWidth, mapHeight, startEnergy, moveEnergy, plantEnergy, jungleRatio, animalsCount,
                         isMagicBreedingAllowedUM, isMagicBreedingAllowedBM);
+        styleElements();
         positionElements(appWidth, appHeight);
         startSimulations();
     }

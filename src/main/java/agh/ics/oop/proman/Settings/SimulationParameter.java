@@ -32,7 +32,7 @@ public enum SimulationParameter implements IParameter {
     @Override
     public String getDefaultValue() {
         return switch (this) {
-            case MAP_WIDTH -> "8";
+            case MAP_WIDTH -> "9";
             case MAP_HEIGHT -> "16";
             case START_ENERGY -> "100";
             case MOVE_ENERGY -> "1";

@@ -5,17 +5,17 @@ import agh.ics.oop.proman.MapElements.Animal.Animal;
 import agh.ics.oop.proman.Maps.AbstractWorldMap;
 import agh.ics.oop.proman.Maps.WorldMapStatistics;
 import agh.ics.oop.proman.Observers.IEpochEndObserver;
-import agh.ics.oop.proman.Observers.IEventObserver;
+import agh.ics.oop.proman.Observers.IMagicBreedingObserver;
 
 import java.util.LinkedList;
 import java.util.List;
 
-public class SimulationEngine implements Runnable, IEventObserver {
+public class SimulationEngine implements Runnable, IMagicBreedingObserver {
     private final AbstractWorldMap map;
     private final WorldMapStatistics mapStatistics;
     private final List<IEpochEndObserver> epochEndObservers = new LinkedList<>();
-    private final List<IEventObserver> eventObservers = new LinkedList<>();
-    private final int moveDelay = 300;
+    private final List<IMagicBreedingObserver> magicBreedingObservers = new LinkedList<>();
+    private final int moveDelay = 100;
     private Epoch epoch;
     private boolean isPaused = false;
     private boolean isFinished = false;
@@ -23,7 +23,7 @@ public class SimulationEngine implements Runnable, IEventObserver {
     public SimulationEngine(AbstractWorldMap map) {
         this.map = map;
         this.mapStatistics = new WorldMapStatistics(map);
-        this.map.addEventObserver(this);
+        this.map.addMagicBreedingObserver(this);
         this.epoch = getCurrentEpoch(-1);
     }
 
@@ -112,15 +112,15 @@ public class SimulationEngine implements Runnable, IEventObserver {
     }
     //endregion Epoch related ------------------------------------------------------------------------------------------
 
-    //region Events related --------------------------------------------------------------------------------------------
-    public void addEventObserver(IEventObserver eventObserver) {
-        this.eventObservers.add(eventObserver);
+    //region IMagicBreedingObserver related ----------------------------------------------------------------------------
+    public void addMagicBreedingObserver(IMagicBreedingObserver magicBreedingObserver) {
+        this.magicBreedingObservers.add(magicBreedingObserver);
     }
 
     @Override
-    public void eventHappened(String description) {
-        for (IEventObserver eventObserver : this.eventObservers)
-            eventObserver.eventHappened(description);
+    public void magicBreedingHappened(String notificationMessage) {
+        for (IMagicBreedingObserver magicBreedingObserver : this.magicBreedingObservers)
+            magicBreedingObserver.magicBreedingHappened(notificationMessage);
     }
-    //endregion Events related -----------------------------------------------------------------------------------------
+    //endregion IMagicBreedingObserver related -------------------------------------------------------------------------
 }

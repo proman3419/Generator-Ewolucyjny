@@ -1,10 +1,12 @@
 package agh.ics.oop.proman.Gui.Displayers;
 
 import agh.ics.oop.proman.Gui.GuiElementBox;
+import agh.ics.oop.proman.Gui.IGuiContainable;
 import agh.ics.oop.proman.MapElements.AbstractWorldMapElement;
 import agh.ics.oop.proman.MapElements.Animal.Animal;
 import agh.ics.oop.proman.Maps.AbstractWorldMap;
 import agh.ics.oop.proman.Entities.Vector2d;
+import agh.ics.oop.proman.Maps.BoundedWorldMap;
 import agh.ics.oop.proman.Settings.GuiConstants;
 import javafx.application.Platform;
 import javafx.geometry.HPos;
@@ -14,7 +16,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.RowConstraints;
 import javafx.scene.layout.VBox;
 
-public class MapDisplayer extends GridPane {
+public class MapDisplayer extends GridPane implements IGuiContainable {
     private final AbstractWorldMap map;
 
     public MapDisplayer(AbstractWorldMap map) {
@@ -69,5 +71,13 @@ public class MapDisplayer extends GridPane {
             this.getColumnConstraints().clear();
             display();
         });
+    }
+
+    @Override
+    public String getContainerTitle() {
+        if (this.map instanceof BoundedWorldMap)
+            return "Bounded map";
+        else
+            return "Unbounded map";
     }
 }

@@ -7,7 +7,7 @@ import agh.ics.oop.proman.Classes.Helper;
 import agh.ics.oop.proman.Entities.Vector2d;
 import agh.ics.oop.proman.Settings.SimulationConstants;
 import agh.ics.oop.proman.Enums.MoveDirection;
-import agh.ics.oop.proman.Observers.IEventObserver;
+import agh.ics.oop.proman.Observers.IMagicBreedingObserver;
 import agh.ics.oop.proman.Observers.IPositionChangeObserver;
 
 import java.util.*;
@@ -31,7 +31,7 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
     protected final List<Plant> plantsList = new LinkedList<>();
     protected final Set<Vector2d> freePositionsSteppe = new HashSet<>();
     protected final Set<Vector2d> freePositionsJungle = new HashSet<>();
-    protected final List<IEventObserver> eventObservers = new LinkedList<>();
+    protected final List<IMagicBreedingObserver> magicBreedingObservers = new LinkedList<>();
 
     public AbstractWorldMap(int width, int height, int startEnergy, int moveEnergy, int plantEnergy, double jungleRatio,
                             int animalsCount, boolean isMagicBreedingAllowed) {
@@ -187,7 +187,8 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
         List<Animal> animalsListCopy = new LinkedList<>(this.animalsList);
         spawnAnimalsAtRandomFreePositions(animalsListCopy);
         this.magicBreedingCount++;
-        eventHappened(String.format("Magic breeding [%d/%d]", this.magicBreedingCount, SimulationConstants.maxMagicBreedingCount));
+        magicBreedingHappened(String.format("%d / %d", this.magicBreedingCount,
+                              SimulationConstants.maxMagicBreedingCount));
     }
 
     public void animalsBreed() {
@@ -304,13 +305,13 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
         return this.animals.size() > 0;
     }
 
-    public void addEventObserver(IEventObserver eventObserver) {
-        this.eventObservers.add(eventObserver);
+    public void addMagicBreedingObserver(IMagicBreedingObserver magicBreedingObserver) {
+        this.magicBreedingObservers.add(magicBreedingObserver);
     }
 
-    private void eventHappened(String description) {
-        for (IEventObserver eventObserver : this.eventObservers)
-            eventObserver.eventHappened(description);
+    private void magicBreedingHappened(String notificationMessage) {
+        for (IMagicBreedingObserver magicBreedingObserver : this.magicBreedingObservers)
+            magicBreedingObserver.magicBreedingHappened(notificationMessage);
     }
     //endregion Others -------------------------------------------------------------------------------------------------
 

@@ -32,7 +32,7 @@ public class Menu extends GridPane {
 
     private void addSectionTitleLabel(String title) {
         Label titleLabel = new Label(title);
-        titleLabel.setFont(Font.font(GuiConstants.menuFontFamily, FontWeight.BOLD,
+        titleLabel.setFont(Font.font(GuiConstants.fontFamily, FontWeight.BOLD,
                                      GuiConstants.menuSectionTitleFontSize));
         titleLabel.setPadding(new Insets(10,0,5,5));
 
@@ -42,7 +42,7 @@ public class Menu extends GridPane {
 
     private void addControlTitleLabel(String title) {
         Label titleLabel = new Label(title);
-        titleLabel.setFont(Font.font(GuiConstants.menuFontFamily, GuiConstants.menuControlFontSize));
+        titleLabel.setFont(Font.font(GuiConstants.fontFamily, GuiConstants.menuControlFontSize));
         titleLabel.setPadding(new Insets(5,10,5,10));
 
         this.add(titleLabel, 0, this.currRow, 1, 1);
@@ -69,7 +69,7 @@ public class Menu extends GridPane {
 
     private void addTextField(IParameter parameter) {
         TextField textField = new TextField(parameter.getDefaultValue());
-        textField.setFont(Font.font(GuiConstants.menuFontFamily, GuiConstants.menuControlFontSize));
+        textField.setFont(Font.font(GuiConstants.fontFamily, GuiConstants.menuControlFontSize));
         this.add(textField, 1, this.currRow, 1, 1);
         this.parameterToControl.put(parameter, textField);
     }

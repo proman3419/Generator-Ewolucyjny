@@ -59,8 +59,8 @@ public class SimulationControlPanel extends GridPane {
 
     private void positionElements() {
         Platform.runLater(() -> {
-            this.add(pauseButton, 0, 0, 1, 1);
-            this.add(saveReportButton, 1, 0, 1, 1);
+            this.add(this.pauseButton, 0, 0, 1, 1);
+            this.add(this.saveReportButton, 1, 0, 1, 1);
         });
     }
 }

@@ -8,9 +8,9 @@ import javafx.scene.layout.GridPane;
 public class ChartsDisplayer extends GridPane {
     private final Chart animalsCountChart = new Chart(0, "Animals count");
     private final Chart plantsCountChart = new Chart(0, "Plants count");
-    private final Chart averageAnimalEnergyChart = new Chart(0, "Avg animal energy");
-    private final Chart averageAnimalLifespanChart = new Chart(0, "Avg animal lifespan");
-    private final Chart averageChildrenCountChart = new Chart(0, "Avg children count");
+    private final Chart averageAnimalEnergyChart = new Chart(0, "Average animal energy");
+    private final Chart averageAnimalLifespanChart = new Chart(0, "Average animal lifespan");
+    private final Chart averageChildrenCountChart = new Chart(0, "Average children count");
 
     public ChartsDisplayer() {
         positionElements();

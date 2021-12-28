@@ -16,6 +16,7 @@ public class Helper {
     // truthBias from range (0, 1), the higher it is the higher the probability of getting true
     // assumes min = 0
     public static boolean getRandomBoolean(double truthBias) {
+        assert 0 < truthBias && truthBias < 1 : "truthBias should be in range (0, 1)";
         int max = 1000;
         return getRandomIntFromRange(0, max) < max * truthBias;
     }
