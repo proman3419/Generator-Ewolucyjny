@@ -34,7 +34,7 @@ public enum SimulationParameter implements IParameter {
         return switch (this) {
             case MAP_WIDTH -> "9";
             case MAP_HEIGHT -> "16";
-            case START_ENERGY -> "100";
+            case START_ENERGY -> "25";
             case MOVE_ENERGY -> "1";
             case PLANT_ENERGY -> "25";
             case JUNGLE_RATIO -> "0.25";

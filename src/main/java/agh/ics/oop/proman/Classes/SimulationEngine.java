@@ -15,7 +15,7 @@ public class SimulationEngine implements Runnable, IMagicBreedingObserver {
     private final WorldMapStatistics mapStatistics;
     private final List<IEpochEndObserver> epochEndObservers = new LinkedList<>();
     private final List<IMagicBreedingObserver> magicBreedingObservers = new LinkedList<>();
-    private final int moveDelay = 100;
+    private final int moveDelay = 300;
     private Epoch epoch;
     private boolean isPaused = false;
     private boolean isFinished = false;

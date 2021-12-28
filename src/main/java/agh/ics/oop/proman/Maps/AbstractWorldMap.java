@@ -297,7 +297,7 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
         return strongestAnimalsAtPosition;
     }
 
-    private boolean isInsideJungle(Vector2d position) {
+    public boolean isInsideJungle(Vector2d position) {
         return this.lowerLeftJungle.precedes(position) && this.upperRightJungle.follows(position);
     }
 

@@ -4,6 +4,7 @@ import agh.ics.oop.proman.Gui.GuiElementBox;
 import agh.ics.oop.proman.Gui.IGuiContainable;
 import agh.ics.oop.proman.MapElements.AbstractWorldMapElement;
 import agh.ics.oop.proman.MapElements.Animal.Animal;
+import agh.ics.oop.proman.MapElements.Plant;
 import agh.ics.oop.proman.Maps.AbstractWorldMap;
 import agh.ics.oop.proman.Entities.Vector2d;
 import agh.ics.oop.proman.Maps.BoundedWorldMap;
@@ -44,21 +45,31 @@ public class MapDisplayer extends GridPane implements IGuiContainable {
             for (int x = 0; x <= maxX; x++) {
                 int mapX = ll.x + x;
                 int mapY = ur.y - y;
-                addGuiRepresentation(x, y, mapX, mapY);
+                Vector2d position = new Vector2d(mapX, mapY);
+                AbstractWorldMapElement objectAt = this.map.objectAt(position);
+                addGuiRepresentation(x, y, objectAt, position, true);
+                if (objectAt != null)
+                    addGuiRepresentation(x, y, objectAt, position, false);
             }
         }
 
         formatGrid(maxX, maxY);
     }
 
-    private void addGuiRepresentation(int x, int y, int mapX, int mapY) {
-        AbstractWorldMapElement objectAt = this.map.objectAt(new Vector2d(mapX, mapY));
+    private void addGuiRepresentation(int x, int y, AbstractWorldMapElement objectAt,
+                                      Vector2d position, boolean background) {
         GuiElementBox guiElementBox = new GuiElementBox(objectAt);
-        VBox vBox;
-        if (objectAt instanceof Animal)
-            vBox = guiElementBox.getGuiRepresentation(((Animal) objectAt).getEnergy(), this.map.getStartEnergy());
-        else
-            vBox = guiElementBox.getGuiRepresentation(this.map.getPlantEnergy(), this.map.getStartEnergy());
+        VBox vBox = null;
+
+        if (background)
+            vBox = guiElementBox.getGuiRepresentation(this.map.isInsideJungle(position));
+        else {
+            if (objectAt instanceof Animal)
+                vBox = guiElementBox.getGuiRepresentation(((Animal) objectAt).getEnergy(), this.map.getStartEnergy());
+            else if (objectAt instanceof Plant)
+                vBox = guiElementBox.getGuiRepresentation(this.map.getPlantEnergy(), this.map.getStartEnergy());
+        }
+
         this.add(vBox, x, y, 1, 1);
         GridPane.setHalignment(vBox, HPos.CENTER);
         GridPane.setValignment(vBox, VPos.CENTER);
