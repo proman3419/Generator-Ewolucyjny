@@ -1,5 +1,6 @@
 package agh.ics.oop.proman.MapElements.Animal;
 
+import agh.ics.oop.proman.Classes.Helper;
 import agh.ics.oop.proman.MapElements.AbstractWorldMapElement;
 import agh.ics.oop.proman.Maps.AbstractWorldMap;
 import agh.ics.oop.proman.Maps.UnboundedWorldMap;
@@ -122,14 +123,14 @@ public class Animal extends AbstractWorldMapElement {
     @Override
     public String getRepresentationImagePath() {
         return switch (this.orientation) {
-            case NORTH -> "src/main/resources/north.png";
-            case NORTHEAST -> "src/main/resources/northeast.png";
-            case EAST -> "src/main/resources/east.png";
-            case SOUTHEAST -> "src/main/resources/southeast.png";
-            case SOUTH -> "src/main/resources/south.png";
-            case SOUTHWEST -> "src/main/resources/southwest.png";
-            case WEST -> "src/main/resources/west.png";
-            case NORTHWEST -> "src/main/resources/northwest.png";
+            case NORTH -> Helper.adjustPathString("src/main/resources/north.png");
+            case NORTHEAST -> Helper.adjustPathString("src/main/resources/northeast.png");
+            case EAST -> Helper.adjustPathString("src/main/resources/east.png");
+            case SOUTHEAST -> Helper.adjustPathString("src/main/resources/southeast.png");
+            case SOUTH -> Helper.adjustPathString("src/main/resources/south.png");
+            case SOUTHWEST -> Helper.adjustPathString("src/main/resources/southwest.png");
+            case WEST -> Helper.adjustPathString("src/main/resources/west.png");
+            case NORTHWEST -> Helper.adjustPathString("src/main/resources/northwest.png");
         };
     }
     //endregion IMapElement implementation -----------------------------------------------------------------------------

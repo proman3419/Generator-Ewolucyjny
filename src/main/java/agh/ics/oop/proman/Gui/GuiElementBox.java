@@ -19,7 +19,7 @@ public class GuiElementBox {
     }
 
     public VBox getGuiRepresentation(int energy, int maxEnergy) {
-        ImageView imageView = new ImageView(ImagesHoarder.getImage(this.mapElement.getRepresentationImagePath()));
+        ImageView imageView = new ImageView(ImageHoarder.getImage(this.mapElement.getRepresentationImagePath()));
         imageView.setFitWidth(GuiConstants.guiElementBoxImageSizeRatio * this.size);
         imageView.setFitHeight(GuiConstants.guiElementBoxImageSizeRatio * this.size);
 

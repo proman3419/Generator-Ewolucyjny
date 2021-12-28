@@ -26,7 +26,7 @@ public class App extends Application implements IStartButtonClickObserver {
     private int height;
 
     public void start(Stage primaryStage) {
-        ImagesHoarder.loadImagesDirectory("src/main/resources");
+        ImageHoarder.loadImagesDirectory("src/main/resources");
         this.primaryStage = primaryStage;
         this.primaryStage.setScene(new Scene(new Menu(this)));
         this.primaryStage.show();

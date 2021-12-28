@@ -1,5 +1,6 @@
 package agh.ics.oop.proman.MapElements;
 
+import agh.ics.oop.proman.Classes.Helper;
 import agh.ics.oop.proman.Entities.Vector2d;
 
 public class Plant extends AbstractWorldMapElement {
@@ -14,6 +15,6 @@ public class Plant extends AbstractWorldMapElement {
 
     @Override
     public String getRepresentationImagePath() {
-        return "src/main/resources/plant.png";
+        return Helper.adjustPathString("src/main/resources/plant.png");
     }
 }

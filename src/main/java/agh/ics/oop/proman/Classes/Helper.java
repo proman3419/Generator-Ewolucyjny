@@ -3,6 +3,7 @@ package agh.ics.oop.proman.Classes;
 import agh.ics.oop.proman.MapElements.Animal.Animal;
 import agh.ics.oop.proman.MapElements.Animal.Gene;
 
+import java.io.File;
 import java.util.Comparator;
 import java.util.Random;
 import java.util.Set;
@@ -49,5 +50,12 @@ public class Helper {
         }
 
         return null;
+    }
+
+    public static String adjustPathString(String pathString) {
+        String separator = File.separator;
+        if (separator.equals("\\"))
+            separator = "\\\\";
+        return pathString.replaceAll("/", separator);
     }
 }

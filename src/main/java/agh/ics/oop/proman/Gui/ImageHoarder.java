@@ -7,7 +7,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.LinkedHashMap;
 
-public class ImagesHoarder {
+public class ImageHoarder {
     private final static LinkedHashMap<String, Image> imagePathToImage = new LinkedHashMap<>();
 
     public static void loadImagesDirectory(String imagesDirectoryPath) {
@@ -26,10 +26,10 @@ public class ImagesHoarder {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
-        ImagesHoarder.imagePathToImage.put(imagePath, image);
+        ImageHoarder.imagePathToImage.put(imagePath, image);
     }
 
     public static Image getImage(String imagePath) {
-        return ImagesHoarder.imagePathToImage.get(imagePath);
+        return ImageHoarder.imagePathToImage.get(imagePath);
     }
 }
