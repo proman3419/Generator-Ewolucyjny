@@ -8,7 +8,7 @@ public record GuiConstants() {
     public final static int guiContainterTitleFontSize = 16;
     public final static int guiElementBoxImageSize = 45;
     public final static int guiElementBoxSize = 55;
-    public final static int magicBreedingDisplayerFontSize = 20;
+    public final static int magicBreedingDisplayerFontSize = 16;
     public final static int menuControlFontSize = 16;
     public final static int menuSectionTitleFontSize = 20;
 }

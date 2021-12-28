@@ -60,8 +60,8 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
     }
 
     private void noteFreePositions() {
-        for (int x = this.lowerLeft.x; x < this.upperRight.x; x++)
-            for (int y = this.lowerLeft.y; y < this.upperRight.y; y++)
+        for (int x = this.lowerLeft.x; x <= this.upperRight.x; x++)
+            for (int y = this.lowerLeft.y; y <= this.upperRight.y; y++)
                 notePositionIfFree(new Vector2d(x, y));
     }
 
