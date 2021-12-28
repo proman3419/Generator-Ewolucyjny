@@ -4,14 +4,10 @@ import agh.ics.oop.proman.MapElements.IMapElement;
 import agh.ics.oop.proman.Settings.GuiConstants;
 import javafx.geometry.Pos;
 import javafx.scene.control.ProgressBar;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
-
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 
 public class GuiElementBox {
     private final IMapElement mapElement;
@@ -23,7 +19,11 @@ public class GuiElementBox {
     }
 
     public VBox getGuiRepresentation(int energy, int maxEnergy) {
-        VBox vBox = new VBox(makeImageView(), makeEnergyBar(energy, maxEnergy));
+        ImageView imageView = new ImageView(ImagesHoarder.getImage(this.mapElement.getRepresentationImagePath()));
+        imageView.setFitWidth(GuiConstants.guiElementBoxImageSizeRatio * this.size);
+        imageView.setFitHeight(GuiConstants.guiElementBoxImageSizeRatio * this.size);
+
+        VBox vBox = new VBox(imageView, makeEnergyBar(energy, maxEnergy));
         vBox.setAlignment(Pos.CENTER);
 
         return vBox;
@@ -37,20 +37,6 @@ public class GuiElementBox {
         tile.setFill(color);
 
         return new VBox(tile);
-    }
-
-    private ImageView makeImageView() {
-        Image image = null;
-        try {
-            image = new Image(new FileInputStream(this.mapElement.getRepresentationImagePath()));
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-        ImageView imageView = new ImageView(image);
-        imageView.setFitWidth(GuiConstants.guiElementBoxImageSizeRatio * this.size);
-        imageView.setFitHeight(GuiConstants.guiElementBoxImageSizeRatio * this.size);
-
-        return imageView;
     }
 
     private ProgressBar makeEnergyBar(int energy, int maxEnergy) {
