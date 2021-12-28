@@ -335,5 +335,13 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
     public int getPlantEnergy() {
         return plantEnergy;
     }
+
+    public int getWidth() {
+        return width;
+    }
+
+    public int getHeight() {
+        return height;
+    }
     //endregion Getters ------------------------------------------------------------------------------------------------
 }

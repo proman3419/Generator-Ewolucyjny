@@ -15,9 +15,11 @@ import java.io.FileNotFoundException;
 
 public class GuiElementBox {
     private final IMapElement mapElement;
+    private final int size;
 
-    public GuiElementBox(IMapElement mapElement) {
+    public GuiElementBox(IMapElement mapElement, int size) {
         this.mapElement = mapElement;
+        this.size = size;
     }
 
     public VBox getGuiRepresentation(int energy, int maxEnergy) {
@@ -30,8 +32,8 @@ public class GuiElementBox {
     public VBox getGuiRepresentation(boolean isJungle) {
         Rectangle tile = new Rectangle();
         Color color = isJungle ? Color.web("#1c9c2f") : Color.web("#c48b10");
-        tile.setWidth(GuiConstants.guiElementBoxSize);
-        tile.setHeight(GuiConstants.guiElementBoxSize);
+        tile.setWidth(GuiConstants.guiElementBoxBackgroundSizeRatio * this.size);
+        tile.setHeight(GuiConstants.guiElementBoxBackgroundSizeRatio * this.size);
         tile.setFill(color);
 
         return new VBox(tile);
@@ -45,8 +47,8 @@ public class GuiElementBox {
             e.printStackTrace();
         }
         ImageView imageView = new ImageView(image);
-        imageView.setFitWidth(GuiConstants.guiElementBoxImageSize);
-        imageView.setFitHeight(GuiConstants.guiElementBoxImageSize);
+        imageView.setFitWidth(GuiConstants.guiElementBoxImageSizeRatio * this.size);
+        imageView.setFitHeight(GuiConstants.guiElementBoxImageSizeRatio * this.size);
 
         return imageView;
     }

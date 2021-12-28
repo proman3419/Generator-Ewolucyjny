@@ -22,6 +22,8 @@ public class App extends Application implements IStartButtonClickObserver {
     private Thread leftSimulationThread;
     private Simulation rightSimulation;
     private Thread rightSimulationThread;
+    private int width;
+    private int height;
 
     public void start(Stage primaryStage) {
         this.primaryStage = primaryStage;
@@ -35,13 +37,13 @@ public class App extends Application implements IStartButtonClickObserver {
         AbstractWorldMap unboundedMap = new UnboundedWorldMap(mapWidth, mapHeight,
                 startEnergy, moveEnergy, plantEnergy, jungleRatio, animalsCount, isMagicBreedingAllowedUM);
         SimulationEngine unboundedSimulationEngine = new SimulationEngine(unboundedMap);
-        this.leftSimulation = new Simulation(unboundedSimulationEngine, unboundedMap);
+        this.leftSimulation = new Simulation(unboundedSimulationEngine, unboundedMap, this.width, this.height);
         this.leftSimulationThread = new Thread(this.leftSimulation);
 
         AbstractWorldMap boundedMap = new BoundedWorldMap(mapWidth, mapHeight,
                 startEnergy, moveEnergy, plantEnergy, jungleRatio, animalsCount, isMagicBreedingAllowedBM);
         SimulationEngine boundedSimulationEngine = new SimulationEngine(boundedMap);
-        this.rightSimulation = new Simulation(boundedSimulationEngine, boundedMap);
+        this.rightSimulation = new Simulation(boundedSimulationEngine, boundedMap, this.width, this.height);
         this.rightSimulationThread = new Thread(this.rightSimulation);
     }
 
@@ -50,11 +52,11 @@ public class App extends Application implements IStartButtonClickObserver {
         this.rightSimulation.setPadding(new Insets(0,0,0,20));
     }
 
-    private void positionElements(int appWidth, int appHeight) {
+    private void positionElements() {
         GridPane gridPane = new GridPane();
         gridPane.add(this.leftSimulation, 0, 0, 1, 1);
         gridPane.add(this.rightSimulation, 1, 0, 1, 1);
-        this.primaryStage.setScene(new Scene(gridPane, appWidth, appHeight));
+        this.primaryStage.setScene(new Scene(gridPane, this.width, this.height));
     }
 
     private void startSimulations() {
@@ -76,13 +78,13 @@ public class App extends Application implements IStartButtonClickObserver {
         boolean isMagicBreedingAllowedBM = Boolean.parseBoolean(
                 parameterToString.get(SimulationParameter.IS_MAGIC_BREEDING_ALLOWED_BM));
 
-        int appWidth = Integer.parseInt(parameterToString.get(GuiParameter.APP_WIDTH));
-        int appHeight = Integer.parseInt(parameterToString.get(GuiParameter.APP_HEIGHT));
+        this.width = Integer.parseInt(parameterToString.get(GuiParameter.APP_WIDTH));
+        this.height = Integer.parseInt(parameterToString.get(GuiParameter.APP_HEIGHT));
 
         initSimulations(mapWidth, mapHeight, startEnergy, moveEnergy, plantEnergy, jungleRatio, animalsCount,
                         isMagicBreedingAllowedUM, isMagicBreedingAllowedBM);
         styleElements();
-        positionElements(appWidth, appHeight);
+        positionElements();
         startSimulations();
     }
 }

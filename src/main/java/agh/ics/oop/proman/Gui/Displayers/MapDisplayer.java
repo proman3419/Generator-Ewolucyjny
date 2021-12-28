@@ -19,17 +19,21 @@ import javafx.scene.layout.VBox;
 
 public class MapDisplayer extends GridPane implements IGuiContainable {
     private final AbstractWorldMap map;
+    private final int guiElementBoxSize;
 
-    public MapDisplayer(AbstractWorldMap map) {
+    public MapDisplayer(AbstractWorldMap map, int appWidth, int appHeight) {
         this.map = map;
+        int width = (int) (GuiConstants.mapDisplayerToAppWidthRatio * appWidth);
+        int height = (int) (GuiConstants.mapDisplayerToAppHeightRatio * appHeight);
+        this.guiElementBoxSize = Math.min(width / this.map.getWidth(), height / this.map.getHeight());
     }
 
     private void formatGrid(int maxX, int maxY) {
         for (int y = 0; y <= maxY; y++)
-            this.getRowConstraints().add(new RowConstraints(GuiConstants.guiElementBoxSize));
+            this.getRowConstraints().add(new RowConstraints(this.guiElementBoxSize));
 
         for (int x = 0; x <= maxX; x++)
-            this.getColumnConstraints().add(new ColumnConstraints(GuiConstants.guiElementBoxSize));
+            this.getColumnConstraints().add(new ColumnConstraints(this.guiElementBoxSize));
 
         this.setGridLinesVisible(false);
         this.setGridLinesVisible(true);
@@ -58,7 +62,7 @@ public class MapDisplayer extends GridPane implements IGuiContainable {
 
     private void addGuiRepresentation(int x, int y, AbstractWorldMapElement objectAt,
                                       Vector2d position, boolean background) {
-        GuiElementBox guiElementBox = new GuiElementBox(objectAt);
+        GuiElementBox guiElementBox = new GuiElementBox(objectAt, this.guiElementBoxSize);
         VBox vBox = null;
 
         if (background)

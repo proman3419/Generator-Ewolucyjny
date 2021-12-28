@@ -29,14 +29,14 @@ public class Simulation extends GridPane implements Runnable, IEpochEndObserver,
     private final GuiContainer dominantGenomeDisplayerContainer;
     private final GuiContainer magicBreedingDisplayerContainer;
 
-    public Simulation(SimulationEngine simulationEngine, AbstractWorldMap map) {
+    public Simulation(SimulationEngine simulationEngine, AbstractWorldMap map, int appWidth, int appHeight) {
         this.simulationEngine = simulationEngine;
         this.simulationEngine.addEpochEndObserver(this);
         this.simulationEngine.addMagicBreedingObserver(this);
         this.simulationEngine.epochEndedNotify(); // Init epoch ended
         this.simulationEngineThread = new Thread(this.simulationEngine);
         this.simulationControlPanel = new SimulationControlPanel(this.simulationEngine, reportGenerator);
-        this.mapDisplayer = new MapDisplayer(map);
+        this.mapDisplayer = new MapDisplayer(map, appWidth, appHeight);
 
         this.mapDisplayerContainer = new GuiContainer(this.mapDisplayer);
         this.dominantGenomeDisplayerContainer = new GuiContainer(this.dominantGenomeDisplayer);
